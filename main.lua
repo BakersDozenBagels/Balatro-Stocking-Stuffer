@@ -17,12 +17,14 @@ local PresentDefaults = {
     },
     set = 'stocking_present',
     atlas = 'stocking_presents',
-    pos = {x=0, y=0},
+    pos = { x = 0, y = 0 },
     loc_vars = function(self, info_queue, card)
-        return {vars = {colours = {self.dev_colour}}}
+        return { vars = { colours = { self.dev_colour } } }
     end,
     process_loc_text = function(self)
-        SMODS.process_loc_text(G.localization.descriptions[self.set], self.key, G.localization.descriptions.stocking_present[self.key] or G.localization.descriptions.stocking_present.default_text)
+        SMODS.process_loc_text(G.localization.descriptions[self.set], self.key,
+            G.localization.descriptions.stocking_present[self.key] or
+            G.localization.descriptions.stocking_present.default_text)
     end,
     -- select_card = TODO: make this display OPEN on the button,
     can_use = function(self, card)
@@ -30,14 +32,20 @@ local PresentDefaults = {
     end,
     use = function(self, card, area, copier)
         local gift = nil
-        card.dissolve_colours = {self.dev_colour, darken(self.dev_colour, 0.5), lighten(self.dev_colour, 0.5), darken(G.C.RED, 0.2), G.C.GREEN}
+        card.dissolve_colours = { self.dev_colour, darken(self.dev_colour, 0.5), lighten(self.dev_colour, 0.5), darken(
+        G.C.RED, 0.2), G.C.GREEN }
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             blocking = true,
             func = function()
                 card.children.particles = Particles(1, 1, 0, 0, {
-                    timer = 0.01, scale = 0.2, initialize = true,
-                    speed = 3, padding = 1, attach = card, fill = true,
+                    timer = 0.01,
+                    scale = 0.2,
+                    initialize = true,
+                    speed = 3,
+                    padding = 1,
+                    attach = card,
+                    fill = true,
                     colours = card.dissolve_colours,
                 })
                 card.children.particles.fade_alpha = 1
@@ -48,24 +56,30 @@ local PresentDefaults = {
             end
         }))
         G.E_MANAGER:add_event(Event({
-            trigger = 'after', delay = 2,
+            trigger = 'after',
+            delay = 2,
             func = function()
                 G.gift.T.y = card.T.y
                 G.E_MANAGER:add_event(Event({
-                    trigger = 'after', delay = 0.2,
+                    trigger = 'after',
+                    delay = 0.2,
                     func = function()
                         -- TODO: Chooses from self.present_keys
-                        gift = SMODS.add_card({area = G.gift, set = 'Tarot'})
+                        gift = SMODS.add_card({ area = G.gift, set = 'Tarot' })
                         return true
                     end
                 }))
                 G.E_MANAGER:add_event(Event({
-                    trigger = 'ease', delay =  1,
-                    ref_table = G.gift.T, ref_value = 'y', ease_to = G.play.T.y,
+                    trigger = 'ease',
+                    delay = 1,
+                    ref_table = G.gift.T,
+                    ref_value = 'y',
+                    ease_to = G.play.T.y,
                     func = (function(t) return t end)
                 }))
                 G.E_MANAGER:add_event(Event({
-                    trigger = 'after', delay = 1.5,
+                    trigger = 'after',
+                    delay = 1.5,
                     func = function()
                         card.children.particles:remove()
                         card.children.particles = nil
@@ -75,17 +89,17 @@ local PresentDefaults = {
                 G.E_MANAGER:add_event(Event({
                     trigger = 'immediate',
                     func = function()
-                        draw_card(G.gift, G.stocking_present, nil, 'up', nil, gift)                
+                        draw_card(G.gift, G.stocking_present, nil, 'up', nil, gift)
                         return true
                     end
-                }))                
+                }))
                 return true
             end
         }))
     end
 }
 
-for k,v in pairs(PresentDefaults) do
+for k, v in pairs(PresentDefaults) do
     StockingStuffer.Present[k] = v
 end
 
@@ -94,14 +108,15 @@ end
 SMODS.Atlas({
     key = 'presents',
     path = 'presents.png',
-    px = 71, py = 95
+    px = 71,
+    py = 95
 })
 
 SMODS.ConsumableType({
     key = 'stocking_present',
     primary_colour = HEX("22A617"),
     secondary_colour = HEX("22A617"),
-    collection_rows = {6,6},
+    collection_rows = { 6, 6 },
     shop_rate = 2,
     default = 'c_stocking_test_1'
 })
@@ -112,10 +127,10 @@ SMODS.ConsumableType({
 -- TODO: Christmas Tree in palce of G.HUD
 SMODS.Booster({
     key = 'stocking_present_select',
-    config = {choose = 1, extra = 3},
+    config = { choose = 1, extra = 3 },
     ease_background_colour = function(self)
         ease_colour(G.C.DYN_UI.MAIN, G.C.GREEN)
-        ease_background_colour{new_colour = G.C.RED, special_colour = G.C.GREEN, contrast = 2}
+        ease_background_colour { new_colour = G.C.RED, special_colour = G.C.GREEN, contrast = 2 }
     end,
     draw_hand = false,
     create_card = function(self, card, i)
@@ -125,19 +140,19 @@ SMODS.Booster({
 
 -- TODO: Remove when finished
 local devs = {
-    {name = 'eremel_', colour = G.C.RED},
-    {name = 'theAstra', colour = G.C.BLUE},
-    {name = 'Santa Claus', colour = G.C.GREEN},
+    { name = 'eremel_',     colour = G.C.RED },
+    { name = 'theAstra',    colour = G.C.BLUE },
+    { name = 'Santa Claus', colour = G.C.GREEN },
 }
 
 
 -- TODO: Remove when finished
-for i=1, 12 do
+for i = 1, 12 do
     StockingStuffer.Present({
-        key = 'test'..i,
-        pos = {x=i%3, y=0},
-        developer = devs[i%#devs + 1].name,
-        dev_colour = devs[i%#devs + 1].colour
+        key = 'test' .. i,
+        pos = { x = i % 3, y = 0 },
+        developer = devs[i % #devs + 1].name,
+        dev_colour = devs[i % #devs + 1].colour
     })
 end
 
@@ -146,14 +161,29 @@ function G.UIDEF.card_h_popup(card)
     local ret_val = stocking_stuffer_card_popup(card)
     local obj = card.config.center
     if obj and obj.discovered and obj.set and obj.set == 'stocking_present' then
-        local tag = {n=G.UIT.R, config = {align = 'tm'}, nodes = {
-            {n=G.UIT.T, config={text = localize('stocking_stuffer_gift_tag'), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}},
-            {n=G.UIT.O, config={object = DynaText({
-                string = obj.developer, colours = {obj.dev_colour or G.C.UI.BACKGROUND_WHITE},
-                bump = true, silent = true, pop_in = 0, pop_in_rate = 4,
-                shadow = true, y_offset = -0.6, scale =  0.27
-            })}}
-        }}
+        local tag = {
+            n = G.UIT.R,
+            config = { align = 'tm' },
+            nodes = {
+                { n = G.UIT.T, config = { text = localize('stocking_stuffer_gift_tag'), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27 } },
+                {
+                    n = G.UIT.O,
+                    config = {
+                        object = DynaText({
+                            string = obj.developer,
+                            colours = { obj.dev_colour or G.C.UI.BACKGROUND_WHITE },
+                            bump = true,
+                            silent = true,
+                            pop_in = 0,
+                            pop_in_rate = 4,
+                            shadow = true,
+                            y_offset = -0.6,
+                            scale = 0.27
+                        })
+                    }
+                }
+            }
+        }
         table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes[1].nodes, tag)
     end
     return ret_val
@@ -164,17 +194,17 @@ function Game:start_run(args)
     stocking_stuffer_start_run(self, args)
     self.gift = CardArea(
         self.play.T.x, self.play.T.y,
-        5.3*G.CARD_W , 0.95*G.CARD_H, 
-        {card_limit = 1, type = 'play'}
+        5.3 * G.CARD_W, 0.95 * G.CARD_H,
+        { card_limit = 1, type = 'play' }
     )
 
     self.stocking_present = CardArea(
         self.jokers.T.x, self.jokers.T.y - 4,
-        self.jokers.T.w, self.jokers.T.h, 
+        self.jokers.T.w, self.jokers.T.h,
         -- TODO: make this card_limit dynamically grow when cards are added
-        {card_limit = 100, type = 'stocking_stuffer_hide', highlight_limit = 1}
+        { card_limit = 100, type = 'stocking_stuffer_hide', highlight_limit = 1 }
     )
-    
+
     StockingStuffer.animate_areas()
 end
 
@@ -199,7 +229,8 @@ function ease_alignment(area, value, hide)
         G[area].T.y = -4
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
-            blocking = true, blockable = false,
+            blocking = true,
+            blockable = false,
             func = function()
                 G[area].config.type = 'joker'
                 return true
@@ -207,15 +238,21 @@ function ease_alignment(area, value, hide)
         }))
     end
     G.E_MANAGER:add_event(Event({
-        trigger = 'ease', delay =  0.7,
-        blocking = false, blockable = false,
-        ref_table = G[area].T, ref_value = 'y', ease_to = value,
+        trigger = 'ease',
+        delay = 0.7,
+        blocking = false,
+        blockable = false,
+        ref_table = G[area].T,
+        ref_value = 'y',
+        ease_to = value,
         func = (function(t) return t end)
     }))
     if hide then
         G.E_MANAGER:add_event(Event({
-            trigger = 'after', delay = 0.7,
-            blocking = true, blockable = false,
+            trigger = 'after',
+            delay = 0.7,
+            blocking = true,
+            blockable = false,
             func = function()
                 G[area].config.type = 'stocking_stuffer_hide'
                 G[area].T.y = 0
@@ -241,7 +278,6 @@ function CardArea:emplace(card, location, stay_flipped)
     end
     stocking_stuffer_card_area_emplace(self, card, location, stay_flipped)
 end
-
 
 -- TODO: Calculation of stocking_present area
 

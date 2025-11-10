@@ -49,3 +49,80 @@ payload = '''
 (self.config.type == 'stocking_stuffer_hide') or
 '''
 
+# Present buttons while in Present area
+[[patches]]
+[patches.pattern]
+target = 'functions/UI_definitions.lua'
+match_indent = true
+position = 'before'
+pattern = '''
+return base_background
+'''
+payload = '''
+if (card.area == G.stocking_present and G.stocking_present) and card.config.center.use and type(card.config.center.use) == 'function' then --Add a use button if card has a use function
+  base_attach.children.use = G.UIDEF.card_focus_button{
+    card = card, parent = base_attach, type = 'use',
+    func = 'can_use_consumeable', button = 'use_card', card_width = card_width
+}
+end
+'''
+
+# Prevent selling presents in Present area
+[[patches]]
+[patches.pattern]
+target = "functions/UI_definitions.lua"
+pattern = '''
+end
+if card.ability.consumeable then
+'''
+position = "after"
+payload = '''
+    if (G.stocking_present and card.area == G.stocking_present) then
+        if card.config.center.use and type(card.config.center.use) == 'function' then
+            return {
+                n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
+                    {n=G.UIT.C, config={padding = 0.15, align = 'cl'}, nodes={
+                    {n=G.UIT.R, config={align = 'cl'}, nodes={
+                        {n=G.UIT.C, config={ref_table = card, align = "cr",maxw = 1.25, padding = 0.1, r=0.08, minw = 1.25, minh = (card.area and card.area.config.type == 'joker') and 0 or 1, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={
+                            {n=G.UIT.B, config = {w=0.1,h=0.6}},
+                            {n=G.UIT.T, config={text = localize('b_use'),colour = G.C.UI.TEXT_LIGHT, scale = 0.55, shadow = true}}
+                        }}
+                    }},
+                }},
+            }}
+        else
+            return {
+                n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
+                    {n=G.UIT.C, config={padding = 0.15, align = 'cl'}, nodes={},
+                }},
+            }
+        end
+    end
+'''
+match_indent = true
+
+# Present button alignment (This could potentially lead to some incompatibilities, not sure what better option there is apart from a janky hook)
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+match_indent = true
+position = 'at'
+pattern = '''
+config = {align=
+        ((self.area == G.jokers) or (self.area == G.consumeables)) and "cr" or
+        "bmi"
+    , offset = 
+        ((self.area == G.jokers) or (self.area == G.consumeables)) and {x=x_off - 0.4,y=0} or
+        {x=0,y=0.65},
+    parent =self}
+'''
+payload = '''
+config = {align=
+        ((self.area == G.jokers) or (self.area == G.consumeables) or (self.area == G.stocking_present)) and "cr" or
+        "bmi"
+    , offset = 
+        ((self.area == G.jokers) or (self.area == G.consumeables) or (self.area == G.stocking_present)) and {x=x_off - 0.4,y=0} or
+        {x=0,y=0.65},
+    parent =self}
+'''
+
