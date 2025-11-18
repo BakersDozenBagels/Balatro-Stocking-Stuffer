@@ -6,17 +6,17 @@ local devs = {
 }
 
 for _, v in ipairs(devs) do
-    StockingStuffer.Developer(v.name, v.colour)
+    StockingStuffer.Developer({name = v.name, colour = v.colour})
 end
 
 -- TODO: Remove when finished
-for i = 1, 12 do
+for i = 1, 3 do
     StockingStuffer.Present({
-        key = 'test' .. i,
         pos = { x = i % 3, y = 0 },
         developer = devs[i % #devs + 1].name,
+        atlas = 'stocking_presents'
     })
-    for j=1, 5 do
+    for j=1, 5-i do
         StockingStuffer.PresentFiller({
             atlas = 'sack',
             key = 'filler_'..devs[i % #devs + 1].name..'-'..i..j,

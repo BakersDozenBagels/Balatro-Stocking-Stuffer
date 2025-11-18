@@ -167,3 +167,16 @@ if V(SMODS.version) < V('1.0.0~BETA-1117b') then
     end
 end
 '''
+
+# Allow for dummy joker in collection
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/ui.lua"]'
+match_indent = true
+position = 'after'
+pattern = '''
+local pool = SMODS.collection_pool(_pool)
+'''
+payload = '''
+if args.show_no_collection then pool = _pool end
+'''

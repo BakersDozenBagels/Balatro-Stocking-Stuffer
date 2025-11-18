@@ -3,11 +3,11 @@ SMODS.handle_loc_file(SMODS.current_mod.path, SMODS.current_mod.id)
 
 StockingStuffer.Developers = {}
 StockingStuffer.Developer = Object:extend()
-function StockingStuffer.Developer:init(name, colour)
-    self.name = name
-    self.colour = colour
+function StockingStuffer.Developer:init(args)
+    self.name = args.name
+    self.colour = args.colour
 
-    StockingStuffer.Developers[name] = self
+    StockingStuffer.Developers[args.name] = self
 end
 
 StockingStuffer.Present = SMODS.Consumable:extend()
@@ -22,10 +22,26 @@ local PresentDefaults = {
         'key',
         'developer'
     },
+    key = 'present',
     set = 'stocking_present',
-    atlas = 'stocking_presents',
+    atlas = false,
+    class_prefix = false,
     discovered = true,
     pos = { x = 0, y = 0 },
+    inject = function(self)
+        self.dissolve_colours = { StockingStuffer.Developers[self.developer].colour,
+            darken(StockingStuffer.Developers[self.developer].colour, 0.5), lighten(StockingStuffer.Developers[self.developer].colour, 0.5),
+            darken(G.C.RED, 0.2), G.C.GREEN
+        }
+        SMODS.Consumable.inject(self)
+    end,
+    pre_inject_class = function(self, func)
+        for _, obj in pairs(self.obj_table) do
+            if obj.set == 'stocking_present' then
+                obj.atlas = obj.atlas or 'stocking_'..StockingStuffer.Developers[obj.developer].name..'_presents'
+            end
+        end
+    end,
     loc_vars = function(self, info_queue, card)
         return { vars = { colours = { StockingStuffer.Developers[self.developer].colour } } }
     end,
@@ -39,10 +55,7 @@ local PresentDefaults = {
     end,
     use = function(self, card, area, copier)
         local gift = nil
-        card.dissolve_colours = { StockingStuffer.Developers[self.developer].colour,
-            darken(StockingStuffer.Developers[self.developer].colour, 0.5), lighten(StockingStuffer.Developers[self.developer].colour, 0.5),
-            darken(G.C.RED, 0.2), G.C.GREEN
-        }
+        card.dissolve_colours = self.dissolve_colours
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
             blocking = true,
@@ -105,14 +118,38 @@ for k, v in pairs(PresentDefaults) do
     StockingStuffer.Present[k] = v
 end
 
+local smods_add_prefixes = SMODS.add_prefixes
+function SMODS.add_prefixes(cls, obj, from_take_ownership)
+    smods_add_prefixes(cls, obj, from_take_ownership)
+    if cls == StockingStuffer.Present then
+        SMODS.modify_key(obj, StockingStuffer.Developers[obj.developer].name, nil, 'key')
+    end
+end
+
 local PresentFillerDefaults = {
     required_params = {
-        'atlas',
         'key',
         'developer',
     },
+    atlas = false,
+    class_prefix = false,
     set = 'stocking_present_filler',
     discovered = false,
+    inject = function(self)
+        SMODS.modify_key(self, StockingStuffer.Developers[self.developer].name, nil, 'key')
+        self.dissolve_colours = { StockingStuffer.Developers[self.developer].colour,
+            darken(StockingStuffer.Developers[self.developer].colour, 0.5), lighten(StockingStuffer.Developers[self.developer].colour, 0.5),
+            darken(G.C.RED, 0.2), G.C.GREEN
+        }
+        SMODS.Consumable.inject(self)
+    end,
+    pre_inject_class = function(self, func)
+        for _, obj in pairs(self.obj_table) do
+            if obj.set == 'stocking_present_filler' then
+                obj.atlas = obj.atlas or 'stocking_'..StockingStuffer.Developers[obj.developer].name..'_presents'
+            end
+        end
+    end
 }
 
 for k, v in pairs(PresentFillerDefaults) do
@@ -149,18 +186,60 @@ SMODS.ConsumableType({
     key = 'stocking_present',
     primary_colour = HEX("22A617"),
     secondary_colour = HEX("22A617"),
-    collection_rows = { 6, 6 },
     shop_rate = 0,
-    default = 'c_stocking_test_1'
+    no_collection = true
 })
+
+SMODS.Joker({
+    key = 'dummy',
+    atlas = 'presents',
+    pos = {x = 0, y=1},
+    discovered = true,
+    in_pool = function() return false end,
+    no_collection = true
+})
+local csm = Card.start_materialize
+function Card:start_materialize(dissolve_colours, silent, timefac)
+    if self.config.center_key == 'j_stocking_dummy' then dissolve_colours = {G.C.CLEAR} end
+    if self.config.center.set == 'stocking_present' or self.config.center.set == 'stocking_present_filler' then dissolve_colours = self.config.center.dissolve_colours end
+    csm(self, dissolve_colours, silent, timefac)
+end
+
+local tally = set_discover_tallies
+function set_discover_tallies()
+    tally()
+    G.DISCOVER_TALLIES.stocking_presents.of = G.DISCOVER_TALLIES.stocking_presents.of + G.DISCOVER_TALLIES.stocking_present_fillers.of
+    G.DISCOVER_TALLIES.stocking_presents.tally = G.DISCOVER_TALLIES.stocking_presents.tally + G.DISCOVER_TALLIES.stocking_present_fillers.tally
+
+end
 
 SMODS.ConsumableType({
     key = 'stocking_present_filler',
     primary_colour = HEX("22A617"),
     secondary_colour = HEX("22A617"),
-    -- no_collection = true,
-    collection_rows = {5, 5, 5},
+    collection_rows = {6, 6, 6},
     shop_rate = 0,
+    create_UIBox_your_collection = function(self)
+        local type_buf = {}
+        for _, v in ipairs(SMODS.ConsumableType.visible_buffer) do
+            if not v.no_collection and (not G.ACTIVE_MOD_UI or modsCollectionTally(G.P_CENTER_POOLS[v]).of > 0) then type_buf[#type_buf + 1] = v end
+        end
+        local pool = {}
+        for _, present in ipairs(G.P_CENTER_POOLS.stocking_present) do
+            table.insert(pool, present)
+            local count = 0
+            for _, filler in ipairs(G.P_CENTER_POOLS.stocking_present_filler) do
+                if filler.developer == present.developer then
+                    table.insert(pool, filler)
+                    count = count + 1
+                end
+            end
+            for i=count+1, 5 do
+                table.insert(pool, G.P_CENTERS.j_stocking_dummy)
+            end
+        end
+        return SMODS.card_collection_UIBox(pool, self.collection_rows, { back_func = #type_buf>3 and 'your_collection_consumables' or nil, show_no_collection = true})
+    end,
 })
 
 SMODS.Booster({
@@ -180,6 +259,7 @@ SMODS.Booster({
 
 local stocking_stuffer_card_popup = G.UIDEF.card_h_popup
 function G.UIDEF.card_h_popup(card)
+    if card.config.center.key == 'j_stocking_dummy' then return end
     local ret_val = stocking_stuffer_card_popup(card)
     local obj = card.config.center
     if obj and obj.set and (obj.set == 'stocking_present' or obj.set == 'stocking_present_filler') then
@@ -454,7 +534,7 @@ local blacklist = {
 	[".github"] = true,
 	[".git"] = true,
 	["localization"] = true,
-    [".vscode"] = true
+    [".vscode"] = true,
 }
 local function load_files(path, dirs_only)
 	local info = nativefs.getDirectoryItemsInfo(path)
