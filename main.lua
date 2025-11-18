@@ -70,6 +70,7 @@ local PresentDefaults = {
                         local pool = get_current_pool('stocking_present_filler')
                         local key = pseudorandom_element(pool, 'stocking_present_open', {in_pool = function(v, args) return G.P_CENTERS[v].developer == self.developer end})
                         gift = SMODS.add_card({ area = G.gift, set = 'stocking_present_filler', key = key })
+                        discover_card(gift.config.center)
                         return true
                     end
                 }))
