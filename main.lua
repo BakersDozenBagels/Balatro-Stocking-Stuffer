@@ -259,7 +259,7 @@ SMODS.Booster({
 
 local stocking_stuffer_card_popup = G.UIDEF.card_h_popup
 function G.UIDEF.card_h_popup(card)
-    if card.config.center.key == 'j_stocking_dummy' then return end
+    if card.config and card.config.center and card.config.center.key == 'j_stocking_dummy' then return end
     local ret_val = stocking_stuffer_card_popup(card)
     local obj = card.config.center
     if obj and obj.set and (obj.set == 'stocking_present' or obj.set == 'stocking_present_filler') then
