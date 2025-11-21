@@ -209,6 +209,7 @@ StockingStuffer.states = {
     -- Present_Select Booster init
     SMODS.Booster({
         key = 'stocking_present_select',
+        group_key = 'stocking_stuffer_under_the_tree',
         atlas = 'sack',
         config = { choose = 1, extra = 3 },
         ease_background_colour = function(self)
