@@ -54,6 +54,7 @@ StockingStuffer.states = {
         process_loc_text = function(self)
             SMODS.process_loc_text(G.localization.descriptions[self.set], self.key,
                 G.localization.descriptions.stocking_present[self.key] or
+                self.loc_txt or
                 G.localization.descriptions.stocking_present.default_text)
         end,
         can_use = function(self, card)
@@ -158,6 +159,7 @@ StockingStuffer.states = {
         process_loc_text = function(self)
             SMODS.process_loc_text(G.localization.descriptions[self.set], self.key,
                 G.localization.descriptions.stocking_present_filler[self.key] or
+                self.loc_txt or
                 G.localization.descriptions.stocking_present_filler.default_text)
         end,
         loc_vars = function(self, info_queue, card)
