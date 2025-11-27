@@ -196,6 +196,7 @@ StockingStuffer.current_present_order = "before"
                         table.insert(pool, filler)
                         count = count + 1
                     end
+                    if count == 5 then break end
                 end
                 for i=count+1, 5 do
                     table.insert(pool, G.P_CENTERS.j_stocking_dummy)
