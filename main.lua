@@ -304,7 +304,7 @@ StockingStuffer.custom_card_areas = function(game)
     }
     
     StockingStuffer.states.slot_visible = 1
-    -- StockingStuffer.animate_areas()
+    StockingStuffer.animate_areas()
 end
 
 -- Area toggle button func
