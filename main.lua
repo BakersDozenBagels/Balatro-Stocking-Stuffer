@@ -10,6 +10,13 @@ StockingStuffer.states = {
 StockingStuffer.first_calculation = nil
 StockingStuffer.second_calculation = true
 
+-- Colours for identifier bubbles
+StockingStuffer.colours = {
+    before = G.C.PURPLE,
+    after = G.C.GOLD,
+    usable = G.C.ETERNAL
+}
+
 --#region Objects
 
     --#region Developers
@@ -353,15 +360,6 @@ function ease_alignment(area, value, hide)
                 return true
             end
         }))
-        -- Adds delay for calculation animations when switching areas
-        for i=1, 2 do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after', delay = 0.7,
-                func = function()                
-                    return true
-                end
-            }), nil, true)
-        end
     end
 end
 
@@ -521,6 +519,14 @@ local stocking_stuffer_card_juice_up = Card.juice_up
 function Card:juice_up(scale, rot)
     if (self.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1) then
         G.FUNCS.toggle_jokers_presents()
+        for i=1, 2 do
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after', delay = 0.7,
+                func = function()                
+                    return true
+                end
+            }), nil, true)
+        end
     end
     stocking_stuffer_card_juice_up(self, scale, rot)
 end
@@ -532,6 +538,14 @@ function card_eval_status_text(card, ...)
         func = function()  
             if (card.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (card.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1) then
                 G.FUNCS.toggle_jokers_presents()
+                for i=1, 2 do
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after', delay = 0.7,
+                        func = function()                
+                            return true
+                        end
+                    }), nil, true)
+                end
             end
             return true
         end

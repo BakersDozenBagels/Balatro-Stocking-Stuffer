@@ -20,7 +20,8 @@ return {
                 name = 'Gingerbread Man',
                 text = {
                     'When used, {C:green}reroll{} the shop',
-                    'for free {C:attention}once{} per shop'
+                    'for free {C:attention}once{} per shop',
+                    '{stocking}usable{}'
                 }
             },
         },
