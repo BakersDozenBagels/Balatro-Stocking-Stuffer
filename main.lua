@@ -514,7 +514,10 @@ end
 -- Gives player a Sack of Presents on shop enter when tracking var condition is met
 local update_shopref = Game.update_shop
 function Game.update_shop(self, dt)
-    if not G.GAME.stocking_last_pack or G.GAME.round_resets.ante <= G.GAME.stocking_last_pack then return end
+    if not G.GAME.stocking_last_pack or G.GAME.round_resets.ante <= G.GAME.stocking_last_pack then 
+        update_shopref(self, dt)
+        return
+    end
     G.GAME.stocking_last_pack = G.GAME.round_resets.ante
     if not G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed then
         G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed = true
