@@ -655,6 +655,15 @@ end
 local path = SMODS.current_mod.path .. '/content'
 load_files(path)
 
+if Balatest then
+    function Balatest.open_present(key)
+        SMODS.add_card({ area = G.stocking_present, set = 'stocking_present', key = key })
+        Balatest.wait_for_input()
+        Balatest.q(function() end)
+    end
+    load_files(SMODS.current_mod.path .. '/tests')
+end
+
 --#endregion
 
 --#region Localization Folder Loading
