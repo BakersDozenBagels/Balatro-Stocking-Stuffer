@@ -176,6 +176,7 @@ StockingStuffer.colours = {
         secondary_colour = HEX("22A617"),
         collection_rows = {6, 6, 6},
         shop_rate = 0,
+        default = 'Santa Claus_stocking_coal',
         create_UIBox_your_collection = function(self)
             local type_buf = {}
             for _, v in ipairs(SMODS.ConsumableType.visible_buffer) do
@@ -186,7 +187,7 @@ StockingStuffer.colours = {
                 table.insert(pool, present)
                 local count = 0
                 for _, filler in ipairs(G.P_CENTER_POOLS.stocking_present) do
-                    if filler.developer == present.developer then
+                    if filler.developer == present.developer and not filler.no_collection then
                         table.insert(pool, filler)
                         count = count + 1
                     end
@@ -251,7 +252,8 @@ StockingStuffer.colours = {
         primary_colour = HEX("22A617"),
         secondary_colour = HEX("22A617"),
         shop_rate = 0,
-        no_collection = true
+        no_collection = true,
+        default = 'Santa Claus_stocking_present',
     })
 
     -- Dummy object for Collection organization
@@ -652,6 +654,15 @@ local function load_files(path)
 end
 local path = SMODS.current_mod.path .. '/content'
 load_files(path)
+
+if Balatest then
+    function Balatest.open_present(key)
+        SMODS.add_card({ area = G.stocking_present, set = 'stocking_present', key = key })
+        Balatest.wait_for_input()
+        Balatest.q(function() end)
+    end
+    load_files(SMODS.current_mod.path .. '/tests')
+end
 
 --#endregion
 
