@@ -344,3 +344,41 @@ elseif G.GAME.pack_choices and G.GAME.pack_choices > 1 then
 payload = '''
 end
 '''
+
+
+# Fix SMODS.find_card
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/utils.lua"]'
+match_indent = true
+position = 'at'
+pattern = '''
+if not G.jokers or not G.jokers.cards then return {} end
+for _, area in ipairs(SMODS.get_card_areas('jokers')) do
+    if area.cards then
+        for _, v in pairs(area.cards) do
+            if v and type(v) == 'table' and v.config.center.key == key and (count_debuffed or not v.debuff) then
+                table.insert(results, v)
+            end
+        end
+    end
+'''
+payload = '''
+if not G.jokers or not G.jokers.cards then return {} end
+local checked = {}
+for _, area in ipairs(SMODS.get_card_areas('jokers')) do
+    local not_checked = true
+    for _, checked_area in ipairs(checked) do
+        if checked_area == area then not_checked = false end
+    end
+    if not_checked then
+        if area.cards then
+            for _, v in pairs(area.cards) do
+                if v and type(v) == 'table' and v.config.center.key == key and (count_debuffed or not v.debuff) then
+                    table.insert(results, v)
+                end
+            end
+        end
+    end
+    table.insert(checked, area)
+'''
