@@ -419,7 +419,7 @@ StockingStuffer.Present({
         if context.before and StockingStuffer.first_calculation and SMODS.pseudorandom_probability(card, "shoutouts to whatever the religiously neutral equivalent of christmas is", card.ability.extra.numer, card.ability.extra.denom, "Festive Cheer") then
             return {
                 message = localize("proot_festive"..pseudorandom("shoutouts to whamageddon", 1, 10)),
-                level_up = math.max(math.floor(G.GAME.hands[context.scoring_name].level) * (card.ability.extra.xCheer - 1), 1),
+                level_up = math.max(math.floor(G.GAME.hands[context.scoring_name].level * (card.ability.extra.xCheer - 1)), 1),
                 dollars = math.floor(G.GAME.dollars * (card.ability.extra.xCheer - 1)),
                 extra = {
                     xmult = card.ability.extra.xCheer
