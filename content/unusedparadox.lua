@@ -206,7 +206,7 @@ StockingStuffer.Present({
         return {vars = {card.ability.extra.items_left}}
     end,
     update = function(self, card, dt)
-        if G.STAGE == G.STAGES.RUN and G.STATES.SMODS_BOOSTER_OPENED ~= G.STATE and card.ability.extra.items_left > 0 then
+        if G.shop_booster and G.shop_booster.cards and G.shop_jokers and G.shop_jokers.cards and G.STAGE == G.STAGES.RUN and G.STATES.SMODS_BOOSTER_OPENED ~= G.STATE and card.ability.extra.items_left > 0 then
             local couponed = false
             for _, area in ipairs({G.shop_booster.cards, G.shop_jokers.cards}) do
                 for _, v in ipairs(area) do

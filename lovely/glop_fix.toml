@@ -1,0 +1,17 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+# Fixes leveling up poker hands by not modifying poker hand glop
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+match_indent = true
+position = 'before'
+pattern = '''
+return base + G.GAME.hands[hand]['l_' .. parameter] * amount
+'''
+payload = '''
+if parameter == 'stocking_jolly_glop' then return end --don't upgrade jolly glop
+'''
