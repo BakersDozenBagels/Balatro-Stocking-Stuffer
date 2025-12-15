@@ -29,11 +29,12 @@ local PotatoPatchUtils_card_popup = G.UIDEF.card_h_popup
 function G.UIDEF.card_h_popup(card)
     local ret_val = PotatoPatchUtils_card_popup(card)
     local obj = card.config.center
+    local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
     if obj and obj.artist then
-        table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, PotatoPatchUtils.CREDITS.generate_string(obj.artist, 'stocking_stuffer_art_credit'))
+        table.insert(target, PotatoPatchUtils.CREDITS.generate_string(obj.artist, 'stocking_stuffer_art_credit')) 
     end
     if obj and obj.coder then
-        table.insert(ret_val.nodes[1].nodes[1].nodes[1].nodes, PotatoPatchUtils.CREDITS.generate_string(obj.coder, 'stocking_stuffer_code_credit'))
+        table.insert(target, PotatoPatchUtils.CREDITS.generate_string(obj.coder, 'stocking_stuffer_code_credit')) 
     end
     return ret_val
 end

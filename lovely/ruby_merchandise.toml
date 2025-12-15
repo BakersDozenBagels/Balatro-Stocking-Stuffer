@@ -28,22 +28,16 @@ end
 [patches.pattern]
 target = 'functions/UI_definitions.lua'
 match_indent = true
-position = 'at'
+position = 'before'
 pattern = '''
-{n=G.UIT.R, config={align = "cm", padding = 0.07, r = 0.1, colour = adjust_alpha(card_type_background, 0.8)}, nodes={
-    name_from_rows(AUT.name, is_playing_card and G.C.WHITE or nil),
-    desc_from_rows(AUT.main),
-    badges[1] and {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=badges} or nil,
-}}
+if multi_boxes[1] then
 '''
 payload = '''
-{n=G.UIT.R, config={align = "cm", padding = 0.07, r = 0.1, colour = adjust_alpha(card_type_background, 0.8)}, nodes={
-    name_from_rows(AUT.name, is_playing_card and G.C.WHITE or nil),
-    desc_from_rows(AUT.main),
-    AUT2 and name_from_rows(AUT2.name, is_playing_card and G.C.WHITE or nil) or nil,
-    AUT2 and desc_from_rows(AUT2.main) or nil,
-    badges[1] and {n=G.UIT.R, config={align = "cm", padding = 0.03}, nodes=badges} or nil,
-}},
+if AUT2 then
+local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
+    table.insert(target, #target, name_from_rows(AUT2.name, is_playing_card and G.C.WHITE or nil))
+    table.insert(target, #target, desc_from_rows(AUT2.main))
+end
 '''
 
 [[patches]]
