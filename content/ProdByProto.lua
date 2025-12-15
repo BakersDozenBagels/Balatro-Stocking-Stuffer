@@ -490,6 +490,7 @@ StockingStuffer.Present({
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
     key = 'bath_bomb', -- keys are prefixed with 'display_name_stocking_' for reference
+    no_collection = true,
     -- You are encouraged to use the localization file for your name and description, this is here as an example
     -- loc_txt = {
     --     name = 'Example Present',
@@ -578,6 +579,7 @@ StockingStuffer.Present({
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
     key = 'jel', -- keys are prefixed with 'display_name_stocking_' for reference
+    no_collection = true,
     -- You are encouraged to use the localization file for your name and description, this is here as an example
     -- loc_txt = {
     --     name = 'Example Present',
@@ -640,6 +642,7 @@ StockingStuffer.Present({
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
     key = 'moist', -- keys are prefixed with 'display_name_stocking_' for reference
+    no_collection = true,
     -- You are encouraged to use the localization file for your name and description, this is here as an example
     -- loc_txt = {
     --     name = 'Example Present',
@@ -726,6 +729,7 @@ playlistEvent = {
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
     key = 'list', -- keys are prefixed with 'display_name_stocking_' for reference
+    no_collection = true,
     -- You are encouraged to use the localization file for your name and description, this is here as an example
     -- loc_txt = {
     --     name = 'Example Present',
