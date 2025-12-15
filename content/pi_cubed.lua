@@ -151,9 +151,14 @@ StockingStuffer.Present({
     pixel_size = { w = 70, h = 82 },
     config = { extra = { can_activate = true } },
     can_use = function(self, card)
-        local _, text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
-        if card.ability.extra.can_activate and #G.hand.highlighted == 3 and text == 'Three of a Kind' then
-            return true
+        if card.ability.extra.can_activate and #G.hand.highlighted > 0 then
+            local _, text = G.FUNCS.get_poker_hand_info(G.hand.highlighted)
+            if #G.hand.highlighted == 3 and text == 'Three of a Kind' then
+                return true
+            end
+            for _, present in pairs(SMODS.find_card("notmario_stocking_plushie")) do
+                if present.ability.extra.active then return true end
+            end
         end
         return false
     end,
