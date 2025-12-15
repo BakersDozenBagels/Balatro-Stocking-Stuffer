@@ -634,6 +634,13 @@ function G.FUNCS.end_consumeable(e)
     end_consum(e)
 end
 
+local ch = Card.hover
+function Card:hover()
+    if self.config.center_key ~= 'j_stocking_dummy' then
+        ch(self)
+    end
+end
+
 --#endregion
 
 --#region File Loading (Totally stolen from Hot Potato)
