@@ -363,7 +363,7 @@ StockingStuffer.Present({
 
     key = 'lil_haunt', -- keys are prefixed with 'display_name_stocking_' for reference
     pos = { x = 1, y = 0 },
-    config = { extra = {ready = true} },
+    config = { extra = {ready = false} },
 
     -- Adjusts the hitbox on the item
     pixel_size = { w = 55, h = 43 },
@@ -376,7 +376,7 @@ StockingStuffer.Present({
         return true
     end,
     can_use = function(self, card)
-        return G.STATE == G.STATES.SELECTING_HAND and card.ability.extra.ready
+        return G.STATE == G.STATES.SELECTING_HAND and not card.ability.extra.ready
     end,
 
     calculate = function(self, card, context)
@@ -393,9 +393,9 @@ StockingStuffer.Present({
                 end
             end
         end
-        if StockingStuffer.first_calculation and card.ability.extra.ready and context.repetition_only or (context.retrigger_joker_check) and #G.stocking_present.cards >= 1 then
+        if StockingStuffer.first_calculation and card.ability.extra.ready and (context.repetition_only or context.retrigger_joker_check) and #G.stocking_present.cards >= 1 then
             if context.other_card.config.center.set == 'stocking_present' then
-                return { --Seems to trigger twice i don't know why
+                return {
                     repetitions = 1,
                     card = context.other_card,
                     message = localize('k_again_ex')
