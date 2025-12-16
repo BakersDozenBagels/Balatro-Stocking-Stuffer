@@ -189,7 +189,11 @@ StockingStuffer.Present({
             trigger = 'after',
             delay = 0.3,
             func = function()
-                SMODS.add_card({ set = 'Tarot', area = G.consumeables });
+                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    SMODS.add_card({ set = 'Tarot', area = G.consumeables });
+                    G.GAME.consumeable_buffer = 0
+                end
                 card:juice_up(0.3, 0.5)
                 play_sound('timpani')
 
@@ -223,7 +227,7 @@ StockingStuffer.Present({
     end,
 
     can_use = function(self, card)
-        return card.ability.extra.state == 1 and #G.consumeables.cards < G.consumeables.config.card_limit;
+        return card.ability.extra.state == 1;
     end,
 })
 
