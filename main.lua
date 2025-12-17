@@ -96,7 +96,9 @@ function Game:main_menu(change_context)
         -- Define node functions for Logo
         function G.SPLASH_STOCKSTUFF_LOGO:click()
             play_sound('button', 1, 0.3)
+            SMODS.LAST_SELECTED_MOD_TAB = nil
             G.FUNCS['openModUI_stocking']()
+            G.OVERLAY_MENU:get_UIE_by_ID("overlay_menu_back_button").config.button = "exit_overlay_menu"
         end
 
         function G.SPLASH_STOCKSTUFF_LOGO:hover()
