@@ -707,7 +707,7 @@ function Card:juice_up(scale, rot)
         for i=1, 2 do
             G.E_MANAGER:add_event(Event({
                 trigger = 'after', delay = 0.7,
-                func = function()                
+                func = function()
                     return true
                 end
             }), nil, true)
@@ -723,7 +723,7 @@ function Card:start_dissolve(...)
         for i=1, 2 do
             G.E_MANAGER:add_event(Event({
                 trigger = 'after', delay = 0.7,
-                func = function()                
+                func = function()
                     return true
                 end
             }), nil, true)
