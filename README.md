@@ -61,3 +61,6 @@ Participants were tasked with creating up to 5 Presents for players to unwrap fr
 - VMan_2002
 - WilsontheWolf
 - Youh Kirisame
+### Non-participant Contributors
+- Spikeberd (a.k.a Lyman)
+- DigitalDetective47
