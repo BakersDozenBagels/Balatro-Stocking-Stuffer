@@ -2,9 +2,9 @@ return {
 	misc = {
 		v_dictionary = {
 			-- RETURNER'S WINDING CLOCK
-			a_haya_ante = { "-#1# Ante" },
+			a_haya_ante = "-#1# Ante" ,
 			-- HF Murasama
-			a_haya_countdown = { "#1# left" },
+			a_haya_countdown = "#1# left" ,
 		},
 		dictionary = {
 			-- Irisu's Bat
