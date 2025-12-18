@@ -16,7 +16,6 @@ local display_name = 'VMan_2002'
 -- MAKE SURE THIS VALUE HAS BEEN CHANGED
 
 local returnFalse = topuplib and topuplib.returnFalse or function() return false end
-local print = returnFalse
 
 -- Present Atlas Template
 -- Note: You are allowed to create more than one atlas if you need to use weird dimensions
@@ -372,12 +371,16 @@ StockingStuffer.Present({
 				if context.scoring_name == "Straight" then
 					--gain mult
 					card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.gain
+					SMODS.calculate_effect({message = localize("k_upgrade_ex")}, card)
 				elseif not next(context.poker_hands["Straight"]) and card.ability.extra.mult > 0 then
 					--lose mult
 					card.ability.extra.mult = math.max(card.ability.extra.mult - card.ability.extra.loss, 0)
+					SMODS.calculate_effect({message = localize{type='variable',key='a_mult_minus',vars={card.ability.extra.loss}}}, card)
 				end
 				card.ability.extra.mult = math.floor(card.ability.extra.mult * 1000) * 0.001 --fix weird floating point precision bug
-				return mult ~= 0 and {mult = card.ability.extra.mult}
+				if mult ~= 0 then
+					return {mult = card.ability.extra.mult}
+				end
 			end
 			if StockingStuffer.second_calculation and context.scoring_name == "Straight Flush" then
 				return {xmult = card.ability.extra.mult + 1}
@@ -454,7 +457,7 @@ StockingStuffer.Present({
 					return {
 						xmult = lol,
 						sound = "stocking_VMan_2002_splat",
-						message = localize("vman_2002_plush_commit")
+						message = localize("k_reset")
 					}
 				end
 				return
