@@ -4,6 +4,13 @@ assert(SMODS.load_file('PotatoPatchUtils/info_menu.lua'))()
 assert(SMODS.load_file('PotatoPatchUtils/credits.lua'))()
 PotatoPatchUtils.LOC.init()
 
+SMODS.Atlas{
+    key = "modicon",
+    path = "modicon.png",
+    px = 34,
+    py = 34,
+}
+
 -- State for Present Area visibility
 StockingStuffer.states = {
     slot_visible = 1,
