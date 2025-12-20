@@ -116,20 +116,6 @@ StockingStuffer.Present({
 
 		local prev_state = G.TAROT_INTERRUPT
 
-		-- Offset these manually
-		if G.shop and not G.shop.alignment.offset.py then
-			G.shop.alignment.offset.py = G.shop.alignment.offset.y
-			G.shop.alignment.offset.y = G.ROOM.T.y + 29
-		end
-		if G.blind_select and not G.blind_select.alignment.offset.py then
-			G.blind_select.alignment.offset.py = G.blind_select.alignment.offset.y
-			G.blind_select.alignment.offset.y = G.ROOM.T.y + 39
-		end
-		if G.round_eval and not G.round_eval.alignment.offset.py then
-			G.round_eval.alignment.offset.py = G.round_eval.alignment.offset.y
-			G.round_eval.alignment.offset.y = G.ROOM.T.y + 29
-		end
-
 		if math.floor(pseudorandom('irisu_jumpscare_factor', 0, 100)) == 0 or G.GAME.haya_force_irisu then
 			G.E_MANAGER:add_event(Event {
 				func = function()
@@ -182,14 +168,11 @@ StockingStuffer.Present({
 			delay = 2,
 			func = function()
 				--if not G.STATE_COMPLETE and not G.OVERLAY_MENU then
-				local card = SMODS.add_card({ area = G.play, key = 'p_stocking_present_select', skip_materialize = true })
-				G.FUNCS.use_card({ config = { ref_table = card } })
+				local booster = SMODS.add_card({ area = G.play, key = 'p_stocking_present_select', skip_materialize = true })
+				booster.cost = 0
+				G.FUNCS.use_card({ config = { ref_table = booster } })
 				G.TAROT_INTERRUPT = prev_state
 				G.GAME.PACK_INTERRUPT = prev_state
-				-- Circumvent cost lmao
-				ease_dollars(card.config.center.cost, true)
-				ease_value(G.HUD.alignment.offset, 'x', -7, nil, nil, nil, 1, 'elastic')
-				ease_value(G.christmas_tree.alignment.offset, 'x', 12, nil, nil, nil, 1, 'elastic')
 				return true
 				--end
 			end
