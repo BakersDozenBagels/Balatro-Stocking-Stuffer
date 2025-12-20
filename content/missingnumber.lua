@@ -69,7 +69,7 @@ StockingStuffer.Present({
     calculate = function(self, card, context)
         -- probabilties rerolled once to pick positive is what i WOULD say if i were LYING
 
-        if context.mod_probability then
+        if context.mod_probability and StockingStuffer.first_calculation then
             local n = context.numerator
             local d = context.denominator
             local function map(v, imi, ima, omi, oma)
@@ -108,7 +108,7 @@ StockingStuffer.Present({
         return { vars = { card.ability.extra.gain } }
     end,
     calculate = function(self, card, context)
-        if context.end_of_round and context.main_eval and card.ability.extra.active then
+        if context.end_of_round and context.main_eval and card.ability.extra.active and StockingStuffer.first_calculation then
             if context.game_over then
                 card.ability.extra.active = false
                 G.E_MANAGER:add_event(Event({
@@ -236,7 +236,7 @@ StockingStuffer.Present({
         return { vars = { card.ability.extra.gain, card.ability.extra.current } }
     end,
     calculate = function(self, card, context)
-        if context.fix_probability then
+        if context.fix_probability and StockingStuffer.first_calculation then
             if not context.from_roll then
                 return
             end
@@ -248,7 +248,7 @@ StockingStuffer.Present({
             return { numerator = 0 } --no probabiliy
         end
 
-        if context.joker_main then
+        if context.joker_main and StockingStuffer.second_calculation then
             return { xmult = card.ability.extra.current }
         end
     end,
