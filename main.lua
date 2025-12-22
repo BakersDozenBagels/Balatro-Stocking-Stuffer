@@ -280,6 +280,7 @@ end
                 darken(G.C.RED, 0.2), G.C.GREEN
             }
             SMODS.Consumable.inject(self)
+            table.remove(G.P_CENTER_POOLS.Consumeables, #G.P_CENTER_POOLS.Consumeables)
             local dev_name = StockingStuffer.Developers[self.developer].loc and localize(StockingStuffer.Developers[self.developer].loc) or StockingStuffer.Developers[self.developer].name
             SMODS.Achievement({
                 key = 'stocking_open_'..self.developer,
@@ -462,6 +463,7 @@ end
                 darken(G.C.RED, 0.2), G.C.GREEN
             }
             SMODS.Consumable.inject(self)
+            table.remove(G.P_CENTER_POOLS.Consumeables, #G.P_CENTER_POOLS.Consumeables)
         end,
         pre_inject_class = function(self, func)
             for _, obj in pairs(self.obj_table) do
