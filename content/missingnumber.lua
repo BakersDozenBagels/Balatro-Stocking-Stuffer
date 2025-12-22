@@ -160,7 +160,7 @@ StockingStuffer.Present({
     end,
     config = { extra = { xmult = 1, xmult_base = 1, gain = 0.5, loss = -0.25, active = false } },
     loc_vars = function(self, info_queue, card)
-        return { vars = { card.ability.extra.xmult_base, -card.ability.extra.loss, card.ability.extra.gain, card.ability.extra.xmult, card.ability.extra.active and "active" or "inactive" } }
+        return { vars = { card.ability.extra.xmult_base, -card.ability.extra.loss, card.ability.extra.gain, card.ability.extra.xmult, card.ability.extra.active and localize('bottled_soul_active') or localize('bottled_soul_inactive')} }
     end,
     calculate = function(self, card, context)
         if context.joker_main and card.ability.extra.active and StockingStuffer.second_calculation then
@@ -170,7 +170,7 @@ StockingStuffer.Present({
             card.ability.extra.xmult = math.max(card.ability.extra.xmult, card.ability.extra.xmult_base)
         end
 
-        if context.end_of_round and context.main_eval and (not card.ability.extra.active) then
+        if context.end_of_round and context.main_eval and (not card.ability.extra.active) and StockingStuffer.second_calculation then
             SMODS.scale_card(card, { ref_table = card.ability.extra, ref_value = "xmult", scalar_value = "gain" })
         end
     end,

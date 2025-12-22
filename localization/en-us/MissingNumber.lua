@@ -25,11 +25,11 @@ return {
             MissingNumber_stocking_bottled_soul = {
                 name = "{C:MissingNumber_crystal}Bottled Soul",
                 text = {{
-                    "Use this {C:attention}Present{} to toggle it on or off",
-                    "While active, {X:mult,C:white}X#1#{} Mult, but loses {X:mult,C:white}X#2#{} Mult when triggered",
-                    "While inactive, gains {X:mult,C:white}X#3#{} Mult at end of round",
-                    "{C:inactive}(Currently {X:mult,C:white}X#4#{C:inactive} Mult and #5#)",
-                    "{stocking}usable{}"
+                    "{C:attention}Use{} this Present to toggle it active or inactive",
+                    "While {C:attention}inactive{}, gains {X:mult,C:white}X#3#{} Mult at end of round",
+                    "While {C:attention}active{}, score current {X:mult,C:white}XMult{}, then loses {X:mult,C:white}X#2#{} Mult",
+                    "{C:inactive}(Currently {X:mult,C:white}X#4#{C:inactive} Mult and {C:attention}#5#{}{C:inactive}){}",
+                    "{stocking}after{} {stocking}usable{}",
                 }, {
                     "{C:inactive,s:0.9}A soul in a jar, well-preserved in ichor.",
                     "{C:inactive,s:0.9}Whoever is inside must be very powerful.",
@@ -55,7 +55,8 @@ return {
                     "{C:attention}Listed{} {C:green,E:1}probabilities{} do not trigger",
                     "Rolls the original probability on this {C:attention}Present{}",
                     "Gains {X:mult,C:white}X#1#{} Mult if roll succeeds",
-                    "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)"
+                    "{C:inactive}(Currently {X:mult,C:white}X#2#{C:inactive} Mult)",
+                    "{stocking}after{}",
                 }, {
                     "{C:inactive,s:0.9}These fruits are considered bad luck in many places.",
                     "{C:inactive,s:0.9}Giving a handful of them to someone is said to condemn them to misfortune.",
@@ -74,7 +75,9 @@ return {
     },
     misc = {
         dictionary = {
-            ph_missingno_saved = "Saved by the Zinnia Pin"
+            ph_missingno_saved = "Saved by the Zinnia Pin",
+            bottled_soul_active = "active",
+            bottled_soul_inactive = "inactive",
         }
     }
 }
