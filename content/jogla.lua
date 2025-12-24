@@ -199,7 +199,7 @@ StockingStuffer.Present({
         local cardareas = {}
 
         for i=1, math.ceil(#card.ability.extra.cards/5) do
-            table.insert(cardareas,CardArea(0,2,G.CARD_W*3,1, {card_limit = 5, type = 'title', highlight_limit = 0}))
+            table.insert(cardareas,CardArea(0,G.ROOM.T.h,G.CARD_W*3,1, {card_limit = 5, type = 'title', highlight_limit = 0}))
         end
 
         for i,v in ipairs(card.ability.extra.cards) do
