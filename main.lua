@@ -40,6 +40,333 @@ StockingStuffer.colours = {
 -- Global Mod Calculate for hooking
 StockingStuffer.calculate = function(self, context) end
 
+--#region Mod Menu
+
+StockingStuffer.description_loc_vars = function()
+    local key = {}
+    for i=1, 3 do
+        local str = 'Placeholder'
+        while str == 'Placeholder' do
+            local pres = pseudorandom_element(G.P_CENTER_POOLS.stocking_present)
+            str = localize({type='name_text', set='stocking_present', key=pres.key, vars=pres.loc_vars and (pres:loc_vars({}, pres:create_fake_card()) or {}).vars})
+        end
+        key[i] = str
+    end
+    return {text_colour = G.C.WHITE, background_colour = G.C.BLACK, scale = 1.2, vars ={key[1], key[2], key[3], StockingStuffer.Developers.internal_count}}
+end
+
+StockingStuffer.custom_ui = function(nodes)
+    StockingStuffer.ui = nodes
+    table.remove(nodes, 1)
+    nodes[1].config.emboss = nil
+    nodes[#nodes] = {n=G.UIT.C, config={colour=G.C.CLEAR, padding = 0.1, r=0.1}, nodes ={nodes[1]}}
+    return nodes
+end
+
+StockingStuffer.count_achievements = function()
+    local count = 0
+    local earned = 0
+    for _, v in ipairs(SMODS.Achievement.obj_buffer) do
+        local ach = SMODS.Achievements[v]
+        if ach.mod and ach.mod.id == 'stocking' then
+            count = count + 1
+            if ach.earned then earned = earned + 1 end
+        end
+    end
+    return count, earned
+end
+
+local modDesc = buildModDescTab
+function buildModDescTab(mod)
+    local desc = modDesc(mod)
+    if mod.id == 'stocking' then
+        local stockingDesc = desc.tab_definition_function
+        desc.tab_definition_function = function()
+            local tab = stockingDesc()
+            tab.config.colour = G.C.CLEAR
+            tab.nodes[1].n = G.UIT.C
+            tab.nodes[1].nodes[1].config.padding = 0.2
+            
+            -- Insert spacer
+            table.insert(tab.nodes[1].nodes, 1, {n=G.UIT.R, config={minh = 0.05}})
+
+            -- Insert jolly quip
+            local count, earned = StockingStuffer.count_achievements()
+            local quip = math.floor((earned/count) / 0.25) + 1
+            local desc = {}
+            localize { type = 'descriptions', key = 'stocking_achievement_quip_'..quip, set = 'Other', nodes = desc, scale = 1.4, text_colour = G.C.UI.TEXT_LIGHT }
+            desc = desc_from_rows(desc)
+            desc.config.colour = G.C.BLACK
+            table.insert(tab.nodes[1].nodes, 1, desc)
+
+            -- Insert spacer
+            table.insert(tab.nodes[1].nodes, {n=G.UIT.R, config={minh = 0.05}})
+            
+            -- Insert credit
+            local team = {
+                'theAstra', 'Eremel', 'WilsontheWolf', 'Edward Robinson', 'ThunderEdge', 'Nxkoo', 'SDM_0', 'triple6lexi', 'pi_cubed', 'pangaea47', 'canicao',
+                colours = {}
+            }
+            for i, name in ipairs(team) do
+                team[i] = StockingStuffer.Developers[name] and StockingStuffer.Developers[name].loc and localize(StockingStuffer.Developers[name].loc) or name
+                team.colours[i] = StockingStuffer.Developers[name] and StockingStuffer.Developers[name].colour or HEX("22A617")
+            end
+            local cred = {}
+            localize { type = 'descriptions', key = 'stocking_credit', set = 'Other', nodes = cred, scale = 1, text_colour = G.C.UI.TEXT_LIGHT, vars = team }
+            cred = desc_from_rows(cred)
+            cred.config.colour = G.C.BLACK
+            table.insert(tab.nodes[1].nodes, cred)
+
+            return tab
+        end
+    end
+    return desc
+end
+
+local modBox = create_UIBox_mods
+function create_UIBox_mods(args)
+    local box = modBox(args)
+    if G.ACTIVE_MOD_UI.id == 'stocking' then
+        StockingStuffer.ui = box
+        box.nodes[1].config.colour = G.C.RED
+        local internal = box.nodes[1].nodes
+
+        -- Copy config of first button
+        local conf = internal[1].nodes[1].nodes[1].nodes[1].nodes[1].nodes[2].nodes[1].nodes[1].config
+        conf.colour = G.C.CLEAR
+
+        -- Convert horizontal buttons into vertical buttons
+        local tab_buttons = internal[1].nodes[1].nodes[1].nodes[1].nodes[1].nodes[2]
+        tab_buttons.config.align = 'cl'
+        local buttons = {
+            tab_buttons.nodes[2],
+            tab_buttons.nodes[4],
+            tab_buttons.nodes[3],
+        }
+        for _, b in ipairs(buttons) do
+            b.n = G.UIT.R
+            b.nodes[1].config.colour = HEX("22A617")
+            b.nodes[1].config.button = 'stocking_tab_button'
+            table.remove(tab_buttons.nodes, 2)
+        end
+        buttons[1].nodes[1].config.button = 'stocking_show_presents'
+        buttons[2].nodes[1].config.button = 'stocking_show_achievements'
+        buttons[1].nodes[1].nodes[1].nodes[1].config.text = localize('b_stocking_present_cards')
+
+        -- Change first button into sprite
+        tab_buttons.nodes[1].nodes[1] = {n = G.UIT.R, config = conf, nodes = {
+            {n=G.UIT.O, config={object = SMODS.create_sprite(0,0, 3*(231/117), 3, 'stocking_logo', {x=0,y=0}), align = 'cm '}}
+        }}
+        -- Add other buttons
+        table.insert(tab_buttons.nodes, {n=G.UIT.C, config = {minw = 0.5}})
+        table.insert(tab_buttons.nodes, {n=G.UIT.C, config = {align = 'cm', padding = 0.2}, nodes = buttons})
+
+        -- Configure main content
+        internal[1].config.padding = 0.1
+        internal[1].nodes[1].config.padding = nil
+        internal[1].config.minw = 12.6
+        box.nodes[1].nodes = {}
+        table.insert(box.nodes[1].nodes, {n=G.UIT.R, config={colour=HEX("22A617"), r=0.2, padding=0.1}, nodes = {
+            {n=G.UIT.R, config = {colour = G.C.BLACK, r = 0.2, padding = 0.15}, nodes = internal}
+        }}
+    )
+    end
+    return box
+end
+
+-- Allows triangle to be on right
+local triangle = get_chosen_triangle_from_rect
+function get_chosen_triangle_from_rect(x, y, w, h, vert)
+    if vert == 'right' then
+        local scale = 2
+        x = x - math.min(0.6*math.sin(G.TIMERS.REAL*9)*scale+0.2, 0)
+        return {
+            x+w+3.5*scale, y+h/2 - 1.5*scale,
+            x+w+0.5*scale, y+h/2 + 0, 
+            x+w+3.5*scale,y+h/2 + 1.5*scale
+        }
+    end
+    return triangle(x, y, w, h, vert)
+end
+
+G.FUNCS.stocking_show_presents = function(e)
+    e.config.ref_table.tab_definition_function = buildModDescTab
+    e.config.ref_table.tab_definition_function_args = StockingStuffer
+    G.FUNCS.stocking_tab_button(e)
+    e.config.chosen = nil
+    SMODS.LAST_SELECTED_MOD_TAB = nil
+    G.FUNCS.your_collection_stocking_presents()
+end
+
+G.FUNCS.stocking_show_achievements = function(e)
+    e.config.ref_table.tab_definition_function = stockingBuildAchievementsTab
+    e.config.ref_table.tab_definition_function_args = StockingStuffer
+    G.FUNCS.stocking_tab_button(e)
+end
+
+G.FUNCS.stocking_tab_button = function(e)
+    G.FUNCS.change_tab(e)
+    e.config.chosen = 'right'
+end
+
+-- modified achievement page from smods
+function stockingBuildAchievementsTab(mod, current_page)
+    current_page = current_page or 1
+    fetch_achievements()
+    local achievement_matrix = {{},{}}
+    local achievements_per_row = 2
+    local achievements_pool = {}
+    local achievement_original_order = {}
+    for k, v in ipairs(SMODS.Achievement.obj_buffer) do
+        local ach = SMODS.Achievements[v]
+        if ach then 
+            if ach.mod and ach.mod.id == mod.id then achievements_pool[#achievements_pool+1] = ach end
+        end
+    end
+
+    local achievement_tab = {}
+    for k, v in ipairs(achievements_pool) do
+        achievement_original_order[v.key] = #achievement_tab
+        achievement_tab[#achievement_tab+1] = v
+    end
+    table.sort(achievement_tab, function(a, b) if a.order and b.order then return (a.order or 1) < (b.order or 1) else return achievement_original_order[a.key] < achievement_original_order[b.key] end end)
+    
+    local row = 1
+    local max_lines = 2
+    for i = 1, achievements_per_row do
+        local v = achievement_tab[i+((achievements_per_row)*(current_page-1))]
+        if not v then break end
+        local temp_achievement = SMODS.create_sprite(0, 0, 1.1, 1.1, v.atlas or "achievements", v.earned and v.pos or v.hidden_pos)
+        temp_achievement:define_draw_steps({{shader = 'dissolve', shadow_height = 0.05}, {shader = 'dissolve'}})
+        if i == 1 then 
+            G.E_MANAGER:add_event(Event({
+            trigger = 'immediate',
+            func = (function()
+                G.CONTROLLER:snap_to{node = temp_achievement}
+                return true
+            end)
+            }))
+        end
+        temp_achievement.float = true
+        temp_achievement.states.hover.can = true
+        temp_achievement.states.drag.can = false
+        temp_achievement.states.collide.can = true
+        temp_achievement.hover = function()
+            if not G.CONTROLLER.dragging.target or G.CONTROLLER.using_touch then 
+                if not temp_achievement.hovering and temp_achievement.states.visible then
+                    temp_achievement.hovering = true
+                    temp_achievement.hover_tilt = 3
+                    temp_achievement:juice_up(0.05, 0.02)
+                    play_sound('chips1', math.random()*0.1 + 0.55, 0.12)
+                    Node.hover(temp_achievement)
+                    if temp_achievement.children.alert then 
+                        temp_achievement.children.alert:remove()
+                        temp_achievement.children.alert = nil
+                        v.alerted = true
+                        G:save_progress()
+                    end
+                end
+            end
+            temp_achievement.stop_hover = function() temp_achievement.hovering = false; Node.stop_hover(temp_achievement); temp_achievement.hover_tilt = 0 end
+        end
+
+        -- Description
+        local achievement_text = {}
+        local maxCharsPerLine = 30
+        local function wrapText(text, maxChars)
+            local wrappedText = {""}
+            local curr_line = 1
+            local currentLineLength = 0
+        
+            for word in text:gmatch("%S+") do
+                if currentLineLength + #word <= maxChars then
+                    wrappedText[curr_line] = wrappedText[curr_line] .. word .. ' '
+                    currentLineLength = currentLineLength + #word + 1
+                else
+                    wrappedText[curr_line] = string.sub(wrappedText[curr_line], 0, -2)
+                    curr_line = curr_line + 1
+                    wrappedText[curr_line] = ""
+                    wrappedText[curr_line] = wrappedText[curr_line] .. word .. ' '
+                    currentLineLength = #word + 1
+                end
+            end
+        
+            wrappedText[curr_line] = string.sub(wrappedText[curr_line], 0, -2)
+            return wrappedText
+        end
+    
+        local loc_target
+        if (v.hidden_text and not v.earned) then
+            loc_target = (localize(v.key.."_hidden", 'achievement_descriptions') ~= 'ERROR') and localize(v.key.."_hidden", 'achievement_descriptions') or {localize("hidden_achievement", 'achievement_descriptions')}
+        else loc_target = localize(v.key, 'achievement_descriptions') end
+        if type(loc_target) == 'string' then loc_target = wrapText(loc_target, maxCharsPerLine) end
+        local loc_name
+        if (v.hidden_name and not v.earned) then
+            loc_name = (localize(v.key.."_hidden", 'achievement_names') ~= 'ERROR') and localize(v.key.."_hidden", 'achievement_names') or localize("hidden_achievement", 'achievement_names')
+        else loc_name = localize(v.key, 'achievement_names') end
+
+        local ability_text = {}
+        if loc_target then 
+            for k, v in ipairs(loc_target) do
+                ability_text[#ability_text + 1] = {n=G.UIT.R, config={align = "cm"}, nodes={{n=G.UIT.T, config={text = v, scale = 0.35, shadow = true, colour = G.C.WHITE}}}}
+            end
+        end
+        max_lines = math.max(max_lines, #ability_text)
+        achievement_text[#achievement_text + 1] =
+        {n=G.UIT.R, config={align = "cm", emboss = 0.05, r = 0.1, minw = 4, maxw = 4, padding = 0.05, colour = v.earned and mix_colours(G.C.WHITE, HEX("22A617"), 0.8) or G.C.WHITE, minh = 0.4*max_lines+0.1}, nodes={
+            ability_text[1] and {n=G.UIT.R, config={align = "cm", padding = 0.08, colour = v.earned and mix_colours(G.C.GREY, HEX("22A617"), 0.8) or G.C.GREY, r = 0.1, emboss = 0.05, minw = 3.9, maxw = 3.9, minh = 0.4*max_lines}, nodes=ability_text} or nil
+        }}
+
+        table.insert(achievement_matrix[row], {n = G.UIT.C, config = { align = "cm", padding = 0.1 }, nodes = {
+            {n=G.UIT.R, config = {align = "cm"}, nodes = {
+                {n=G.UIT.R, config = {align = "cm", padding = 0.1}, nodes = {{ n = G.UIT.O, config = { object = temp_achievement, focus_with_object = true }}}},
+                {n=G.UIT.R, config = {align = "cm", minw = 4, maxw = 4, padding = 0.05}, nodes = {
+                    {n=G.UIT.R, config={align = "cm", emboss = 0.05, r = 0.1, padding = 0.1, minh = 0.6, colour = v.earned and mix_colours(G.C.GREY, HEX("22A617"), 0.8) or G.C.GREY}, nodes={
+                        {n=G.UIT.O, config={align = "cm", maxw = 3.8, object = DynaText({string = loc_name, maxw = 3.8, colours = {G.C.UI.TEXT_LIGHT}, shadow = true, spacing = 1, bump = true, scale = 0.4})}},
+                    }},
+                    {n=G.UIT.R, config={align = "cm"}, nodes=achievement_text}
+                }}
+            }}
+        }})
+        
+        if #achievement_matrix[row] == achievements_per_row then 
+            row = row + 1
+            achievement_matrix[row] = {}
+            max_lines = 2
+        end
+    end
+
+    local achievements_options = {}
+    for i = 1, math.ceil(#achievements_pool/(achievements_per_row)) do
+        table.insert(achievements_options, localize('k_page')..' '..tostring(i)..'/'..tostring(math.ceil(#achievements_pool/(achievements_per_row))))
+    end
+
+    local t = {{n=G.UIT.C, config={}, nodes={ 
+        {n=G.UIT.C, config={align = "cm"}, nodes={
+            {n=G.UIT.R, config={align = "cm"}, nodes={
+                {n=G.UIT.R, config={align = "cm", padding = 0.1, minh = 4 }, nodes=achievement_matrix[1]},
+                create_option_cycle({options = achievements_options, w = 4.5, cycle_shoulders = true, opt_callback = 'stocking_achievements', focus_args = {snap_to = true, nav = 'wide'},current_option = current_page, colour = HEX("22A617"), no_pips = true})
+            }}
+        }}
+    }}}
+    return {n = G.UIT.ROOT, config = {emboss = 0.05, minh = 6, r = 0.1, minw = 10, align = "cm", padding = 0.2,colour = G.C.BLACK}, nodes = t}
+end
+
+-- modified from smods
+G.FUNCS.stocking_achievements = function(args)
+    if not args or not args.cycle_config then return end
+    achievement_matrix = {{},{}}
+    local tab_contents = G.OVERLAY_MENU:get_UIE_by_ID('tab_contents')
+    tab_contents.config.object:remove()
+    tab_contents.config.object = UIBox{
+        definition = stockingBuildAchievementsTab(G.ACTIVE_MOD_UI, args.cycle_config.current_option),
+        config = {offset = {x=0,y=0}, parent = tab_contents, type = 'cm'}
+    }
+    tab_contents.UIBox:recalculate()
+end
+
+--#endregion
+
 --#region Config
 StockingStuffer.config_tab = function()
     return {
@@ -246,7 +573,6 @@ function Game:main_menu(change_context)
 
     return ret
 end
-
 --#endregion
 
 --#region Objects
@@ -517,7 +843,7 @@ end
             table.insert(collection.nodes[1].nodes[1].nodes[1].nodes[2].nodes[1].nodes,
                 {n=G.UIT.C, config = {align='cm'}, nodes = {
                     {n=G.UIT.R, config = {colour=G.C.WHITE, padding = 0.05, emboss = 0.05, maxh = 0.6, minh = 0.6, minw = 0.6, r=0.1, align='cm'}, nodes = {
-                        {n=G.UIT.R, config = {align='cm', colour=G.C.GREEN, button = 'stocking_stuffer_help', hover = true, button_dist = 0, maxh = 0.5, minh = 0.5, minw = 0.5, r=0.1}, nodes = {
+                        {n=G.UIT.R, config = {align='cm', colour=HEX("22A617"), button = 'stocking_stuffer_help', hover = true, button_dist = 0, maxh = 0.5, minh = 0.5, minw = 0.5, r=0.1}, nodes = {
                             {n=G.UIT.T, config={text='?', scale = 0.4, colour = G.C.WHITE, shadow = true}}
                         }}
                     }}
@@ -550,8 +876,8 @@ end
         config = { choose = 1, extra = 3 },
         display_size = {w = 71 *  2.5, h = 95 * 2.5},
         ease_background_colour = function(self)
-            ease_colour(G.C.DYN_UI.MAIN, G.C.GREEN)
-            ease_background_colour { new_colour = G.C.RED, special_colour = G.C.GREEN, contrast = 2 }
+            ease_colour(G.C.DYN_UI.MAIN, HEX("22A617"))
+            ease_background_colour { new_colour = G.C.RED, special_colour = HEX("22A617"), contrast = 2 }
             ease_value(G.HUD.alignment.offset, 'x', -7, nil, nil, nil, 1)
             ease_value(G.christmas_tree.alignment.offset, 'x', 12, nil, nil, nil, 1)
         end,
@@ -678,7 +1004,7 @@ G.FUNCS.toggle_jokers_presents = function(e)
     if not G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed then
         G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed = true
         local sprite = SMODS.create_sprite(0,0, 3*(231/117), 3, 'stocking_logo', {x=0,y=0})
-        PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, colour = G.C.GREEN, page_colour = G.C.GREEN, no_first_time = true, image = sprite}
+        PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, colour = HEX("22A617"), page_colour = HEX("22A617"), no_first_time = true, image = sprite, vars = {StockingStuffer.Developers.internal_count}}
     end
     StockingStuffer.states.slot_visible = StockingStuffer.states.slot_visible * -1
     play_sound('paper1')
@@ -796,7 +1122,7 @@ end
 
 G.FUNCS.stocking_stuffer_help = function()
     local sprite = SMODS.create_sprite(0,0, 3*(231/117), 3, 'stocking_logo', {x=0,y=0})
-    PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, image = sprite, colour = G.C.GREEN, page_colour = G.C.GREEN, no_first_time = true, back_func = 'your_collection_stocking_presents'}
+    PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, image = sprite, colour = HEX("22A617"), page_colour = HEX("22A617"), no_first_time = true, back_func = 'your_collection_stocking_presents', vars = {StockingStuffer.Developers.internal_count}}
 end
 
 --#endregion
@@ -901,7 +1227,7 @@ function Game.update_shop(self, dt)
     if not G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed then
         G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed = true
         local sprite = SMODS.create_sprite(0,0, 3*(231/117), 3, 'stocking_logo', {x=0,y=0})
-        PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, colour = G.C.GREEN, page_colour = G.C.GREEN, no_first_time = true, image = sprite}
+        PotatoPatchUtils.INFO_MENU.create_menu{menu_type = 'stocking_stuffer', outline_colour = G.C.RED, colour = HEX("22A617"), page_colour = HEX("22A617"), no_first_time = true, image = sprite, vars = {StockingStuffer.Developers.internal_count}}
     end
     update_shopref(self, dt)
     G.E_MANAGER:add_event(Event({

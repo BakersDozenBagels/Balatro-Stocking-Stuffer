@@ -83,7 +83,7 @@ function PotatoPatchUtils.INFO_MENU.create_UIBox_definition(args)
                 {n = G.UIT.C, config = {align = "cm", padding = 0.2}, nodes = {}},
             }}
             for i,v in ipairs(target.text) do
-                info_nodes.nodes[1].nodes[#info_nodes.nodes[1].nodes+1] = create_text_box({loc_target = v, text_parsed = target.text_parsed[i]})
+                info_nodes.nodes[1].nodes[#info_nodes.nodes[1].nodes+1] = create_text_box({loc_target = v, text_parsed = target.text_parsed[i], vars = args.vars})
             end
         end
     end

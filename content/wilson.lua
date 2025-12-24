@@ -114,7 +114,7 @@ StockingStuffer.Present({
     end,
 
     loc_vars = function(self, info_queue, card)
-        local collection = card.area.config.collection
+        local collection = card.area and card.area.config.collection
         if not collection then
             info_queue[#info_queue+1] = G.P_TAGS[card.ability.extra.tag]
         end

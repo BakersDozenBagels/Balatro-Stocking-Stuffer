@@ -78,7 +78,7 @@ StockingStuffer.Present({
     loc_vars = function(self, info_queue, card)
 		local c = G.C.FILTER
 		
-		if card.area == G.stocking_present then
+		if card.area and card.area == G.stocking_present then
 			local self_pos = 0
 			for i = 1, #G.stocking_present.cards do
 				if G.stocking_present.cards[i] == card then self_pos = i break end

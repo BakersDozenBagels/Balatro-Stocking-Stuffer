@@ -39,12 +39,13 @@ function G.UIDEF.card_h_popup(card)
     return ret_val
 end
 
-PotatoPatchUtils.Developers = {}
+PotatoPatchUtils.Developers = {internal_count = 0}
     PotatoPatchUtils.Developer = Object:extend()
     function PotatoPatchUtils.Developer:init(args)
         self.name = args.name
         self.colour = args.colour
         self.loc = args.loc and type(args.loc) == 'boolean' and 'PotatoPatchDev_'..args.name or args.loc
-
+        
         PotatoPatchUtils.Developers[args.name] = self
+        PotatoPatchUtils.Developers.internal_count = PotatoPatchUtils.Developers.internal_count + 1
     end

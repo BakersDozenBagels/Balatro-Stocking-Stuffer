@@ -99,6 +99,51 @@ return {
                     'are',
                     'great!'
                 }
+            },
+            stocking_achievement_quip_1 = {
+                text = {
+                    "{E:1,C:stocking_present}Your jolly journey is just beginning..."
+                }
+            },
+            stocking_achievement_quip_2 = {
+                text = {
+                    "{E:1,C:stocking_present}It seems you're determined to be especially jolly..."
+                }
+            },
+            stocking_achievement_quip_3 = {
+                text = {
+                    "{E:1,C:stocking_present}You'll have to be extra nice this year to finish this..."
+                }
+            },
+            stocking_achievement_quip_4 = {
+                text = {
+                    "{E:1,C:stocking_present}You're so close to the end! Don't give up!'"
+                }
+            },
+            stocking_achievement_quip_5 = {
+                text = {
+                    "{E:1,C:stocking_present}You've done it! Santa will be asking YOU for help next year..."
+                }
+            },
+            stocking_credit = {
+                text = {
+                    "Special thanks to {V:1}#1#{}, {V:2}#2#{} and {V:3}#3#{} for organising.",
+                    "Thanks to {V:4}#4#{}, {V:5}#5#{}, {V:6}#6#{}, {V:7}#7#{}, {V:8}#8#{},","{V:9}#9#{}, {V:10}#10#{} and {V:11}#11#{} for playtesting."
+                }
+            }
+        },
+        Mod = {
+            stocking = {
+                name = 'Stocking Stuffer',
+                text = {
+                    "The {C:purple}Potato Patch{} has been busy and generous for the {C:green}Festive Season{}!",
+                    "Under the {C:green}Christmas Tree{} lay a variety of {C:stocking_present}Presents{},",
+                    "lovingly prepared and 'wrapped' by {C:attention}#4#{} community members!",
+                    " ",
+                    "With gifts such as {C:purple}#1#{}, {C:gold}#2#{}",
+                    "and {C:red}#3#{}, there's a gift fit for everyone!",
+                    "So head on down to the {C:green}Christmas Tree{} and get {C:stocking_present}unwrapping{}!"
+                }
             }
         }
     },
@@ -113,7 +158,7 @@ return {
                             {
                                 "The {C:purple}Potato Patch{} has been busy and generous for the {C:green}Festive Season{}!",
                                 "Under the {C:green}Christmas Tree{} lay a variety of {C:stocking_present}Presents{},",
-                                "lovingly wrapped and prepared by your favourite community members!"
+                                "lovingly wrapped and prepared by {C:attention}#1#{} community members!"
                             },
                             {
                                 "You can visit the {C:green}Christmas Tree{} to choose a present",
