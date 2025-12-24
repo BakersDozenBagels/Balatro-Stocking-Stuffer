@@ -18,10 +18,10 @@ local enable_bonus_models = false
 -- "disable animations entirely", not
 -- instant cardarea swap
 local function should_draw_3d()
-    return StockingStuffer.disable_animations or true
+    return not StockingStuffer.config.disable_animations
 end
 
-local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale, force_col, shaded)
+local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale_x, scale_z, force_col, shaded)
     -- temp clone
     local v1 = {v1[1], v1[2], v1[3]}
     local v2 = {v2[1], v2[2], v2[3]}
@@ -66,9 +66,9 @@ local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale, force_col, shaded)
     normal_y = normal_y / normal_mag
     normal_z = normal_z / normal_mag
 
-    local v1 = { v1[1] * scale + x, v1[2] * scale + y }
-    local v2 = { v2[1] * scale + x, v2[2] * scale + y }
-    local v3 = { v3[1] * scale + x, v3[2] * scale + y }
+    local v1 = { v1[1] * scale_x + x, v1[2] * scale_z + y }
+    local v2 = { v2[1] * scale_x + x, v2[2] * scale_z + y }
+    local v3 = { v3[1] * scale_x + x, v3[2] * scale_z + y }
 
     local brightness = 0.6 + normal_y / 5 + normal_x / 11
 
@@ -79,13 +79,15 @@ local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale, force_col, shaded)
     love.graphics.polygon("fill", v1[1], v1[2], v2[1], v2[2], v3[1], v3[2])
 end
 
-local function draw_3d_model(card, size_mult, verts, cols, models)
+local function draw_3d_model(card, size_mult_x, size_mult_z, verts, cols, models)
     local scale = G.TILESCALE*G.TILESIZE*G.CANV_SCALE
-    local size_scale = size_mult / 71
-    local size = G.TILESCALE*G.TILESIZE * size_scale
+    local size_scale_x = size_mult_x / 71
+    local size_scale_z = size_mult_z / 71
+    local size_x = G.TILESCALE*G.TILESIZE * size_scale_x
+    local size_z = G.TILESCALE*G.TILESIZE * size_scale_z
 
-    local x_pos = card.children.center.VT.x * scale + scale * size_scale
-    local y_pos = card.children.center.VT.y * scale + scale * size_scale
+    local x_pos = card.children.center.VT.x * scale + scale * size_scale_x / card.T.scale
+    local y_pos = card.children.center.VT.y * scale + scale * size_scale_z / card.T.scale
 
     local x_tilt = (card.tilt_var.mx - x_pos) / 300
     local y_tilt = (card.tilt_var.my - y_pos) / 300
@@ -107,10 +109,11 @@ local function draw_3d_model(card, size_mult, verts, cols, models)
                     verts[model[i + 1]],
                     verts[model[i + 2]],
                     x_pos,
-                    y_pos + size / 8,
+                    y_pos + size_z / 8,
                     y_tilt,
                     x_tilt,
-                    size * juice_scale * 1.1,
+                    size_x * juice_scale * 1.1,
+                    size_z * juice_scale * 1.1,
                     { 0.05, 0.05, 0.05, 0.3 },
                     false
                 )
@@ -129,7 +132,8 @@ local function draw_3d_model(card, size_mult, verts, cols, models)
                 y_pos,
                 y_tilt,
                 x_tilt,
-                size * juice_scale * 1.1,
+                size_x * juice_scale * 1.1,
+                size_z * juice_scale * 1.1,
                 { 0.05, 0.05, 0.15, 1 },
                 false
             )
@@ -148,7 +152,8 @@ local function draw_3d_model(card, size_mult, verts, cols, models)
                 y_pos,
                 y_tilt,
                 x_tilt,
-                size * juice_scale,
+                size_x * juice_scale,
+                size_z * juice_scale,
                 { col[1], col[2], col[3], col[4] },
                 col[5]
             )
@@ -265,7 +270,9 @@ StockingStuffer.WrappedPresent({
     draw = function(self, card, layer)
         card.children.center:set_sprite_pos({x = 0, y = should_draw_3d() and 99 or 1})
         if (card.config.center.discovered or card.bypass_discovery_center) and should_draw_3d() then
-            draw_3d_model(card, 71, wrapped_verts, wrapped_cols, wrapped_models)
+            local x_scale = card.children.center.T.w * 100 / G.TILESCALE / 71 * card.T.scale
+            local z_scale = card.children.center.T.h * 100 / G.TILESCALE / 71 * card.T.scale
+            draw_3d_model(card, 71 * x_scale, 71 * z_scale, wrapped_verts, wrapped_cols, wrapped_models)
         end
     end,
     loc_vars = function(self, info_queue, card)
@@ -543,11 +550,9 @@ StockingStuffer.Present({
     artist = { "pangaea47" },
     draw = function(self, card, layer)
         local function should_draw_3d() return enable_bonus_models end
-        if (card.config.center.discovered or card.bypass_discovery_center) then
-            card.children.center:set_sprite_pos({x = card.ability.extra.active and 1 or 7, y = should_draw_3d() and 99 or 0})
-            if should_draw_3d() then
-                draw_3d_model(card, 71, plushie_verts, plushie_cols, plushie_models)
-            end
+        card.children.center:set_sprite_pos({x = card.ability.extra.active and 1 or 7, y = should_draw_3d() and 99 or 0})
+        if (card.config.center.discovered or card.bypass_discovery_center) and should_draw_3d() then
+            draw_3d_model(card, 71, plushie_verts, plushie_cols, plushie_models)
         end
     end,
     blueprint_compat = false,
@@ -972,11 +977,11 @@ StockingStuffer.Present({
         return { vars = { card.ability.extra.pack_limit, card.ability.extra.present_limit, colours = { HEX("22A617") } } }
     end,
     draw = function(self, card, layer)
-        if (card.config.center.discovered or card.bypass_discovery_center) then
-            card.children.center:set_sprite_pos({x = 2, y = should_draw_3d() and 99 or 1})
-            if should_draw_3d() then
-                draw_3d_model(card, 85, tungsten_verts, tungsten_cols, tungsten_models)
-            end
+        card.children.center:set_sprite_pos({x = 2, y = should_draw_3d() and 99 or 1})
+        if (card.config.center.discovered or card.bypass_discovery_center) and should_draw_3d() then
+            local x_scale = card.children.center.T.w * 100 / G.TILESCALE / 71 * card.T.scale
+            local z_scale = card.children.center.T.h * 100 / G.TILESCALE / 71 * card.T.scale
+            draw_3d_model(card, 85 * x_scale, 85 * z_scale, tungsten_verts, tungsten_cols, tungsten_models)
         end
     end,
 })
