@@ -331,7 +331,7 @@ StockingStuffer.Present({
         -- check context and return appropriate values
         -- StockingStuffer.first_calculation is true before jokers are calculated
         -- StockingStuffer.second_calculation is true after jokers are calculated
-        ret = {}
+        local ret = {}
         if context.selling_card and context.card.ability.set == "Planet" and StockingStuffer.first_calculation then
             if G.STATE ~= G.STATES.SELECTING_HAND and SMODS.pseudorandom_probability(card, "shoutouts to aroace vulpienbies", card.ability.extra.numer1, card.ability.extra.denom1, "planet sold") then
                 G.GAME.proot_psold = true
@@ -470,9 +470,10 @@ StockingStuffer.Present({
         -- check context and return appropriate values
         -- StockingStuffer.first_calculation is true before jokers are calculated
         -- StockingStuffer.second_calculation is true after jokers are calculated
-        ret = {}
+        local ret = {}
         if context.ending_shop and StockingStuffer.first_calculation then
             G.GAME.spa_set = true
+            discover_card(G.P_CENTERS[card.ability.extra.next.key])
             SMODS.add_card{
                 key = card.ability.extra.next.key,
                 area = G.stocking_present
@@ -555,6 +556,7 @@ StockingStuffer.Present({
             card.ability.extra.chips = card.ability.extra.chips - (card.ability.extra.cardQ * card.ability.extra.chips_mod)
             if card.ability.extra.chips <= 0 then
                 card:juice_up()
+                discover_card(G.P_CENTERS[card.ability.extra.next.key])
                 SMODS.add_card{
                 key = card.ability.extra.next.key,
                 area = G.stocking_present
@@ -620,13 +622,14 @@ StockingStuffer.Present({
                 G.GAME.blind:disable()
             else
                 G.GAME.blind.chips = G.GAME.blind.chips / 2
-                G.GAME.blind.chips = ch
+                local ch = G.GAME.blind.chips
 				G.GAME.blind.chip_text = number_format(ch)
             end
         else
             G.GAME.blind.chips = G.GAME.blind.chips / 2
             G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
         end
+        discover_card(G.P_CENTERS[card.ability.extra.next.key])
         SMODS.add_card{
             key = card.ability.extra.next.key,
             area = G.stocking_present
@@ -677,23 +680,24 @@ StockingStuffer.Present({
     end,
     use = function(self, card, area, copier) 
         -- do stuff here
-        cards = {}
+        local cards = {}
         for i=1,#G.jokers.cards do
             if G.jokers.cards[i].ability.perishable or G.jokers.cards[i].debuff then
                 table.insert(cards, i)
             end
         end
         if #cards >= 1 then
-            thing = pseudorandom_element(cards, "remove debuffs")
+            local thing = pseudorandom_element(cards, "remove debuffs")
             G.jokers.cards[thing].ability.perishable = false
             G.jokers.cards[thing].ability.debuff = false
         else
-            smelly = pseudorandom_element(G.jokers.cards, "make it scented")
-            scent = pseudorandom_element({ "e_foil", "e_polychrome", "e_negative" }, "scent to apply")
+            local smelly = pseudorandom_element(G.jokers.cards, "make it scented")
+            local scent = pseudorandom_element({ "e_foil", "e_polychrome", "e_negative" }, "scent to apply")
             smelly:set_edition(scent)
         end
         G.GAME.spa_set = false
         if not next(SMODS.find_card(card.ability.extra.next.key)) then
+            discover_card(G.P_CENTERS[card.ability.extra.next.key])
             SMODS.add_card{
                 key = card.ability.extra.next.key,
                 area = G.stocking_present
@@ -707,7 +711,7 @@ StockingStuffer.Present({
 
 })
 
-songLength = 256
+local songLength = 256
 local playlistEvent
 playlistEvent = {
     trigger = "after",
