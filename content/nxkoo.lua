@@ -209,6 +209,9 @@ StockingStuffer.Present({
 	coder = { "Nxkoo" },
 	config = { extra = { percent = -50 } },
 	blueprint_compat = false,
+	loc_vars = function (self, info_queue, card)
+		return { vars = { -card.ability.extra.percent } }
+	end,
 	add_to_deck = function(self, card, from_debuff)
 		G.E_MANAGER:add_event(Event({
 			func = function()

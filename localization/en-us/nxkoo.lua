@@ -67,8 +67,9 @@ return {
                 },
                 text = {
                     {
-                        "Unfortunately, it has no game..",
-                        "{C:inactive}Does Nothing?..{}"
+                        "Unfortunately, it has no game...",
+                        "{C:inactive}Makes all shop items {C:attention}#1#%{C:inactive}",
+                        "{C:inactive}more expensive when obtained...",
                     }
                 }
             },
