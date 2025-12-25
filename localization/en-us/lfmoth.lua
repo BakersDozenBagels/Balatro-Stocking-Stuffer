@@ -44,6 +44,7 @@ return {
                 text = {
                         '{C:white,X:red}X#1#{} Mult',
                         'Loses {C:white,X:red}X#2#{} Mult per {C:attention}Ante{}',
+                        "passed this run",
                         '{C:inactive}(Currently {C:white,X:red}X#3#{C:inactive} Mult){}',
                         '{C:inactive}(Minimum of {C:white,X:red}X1{C:inactive} Mult){}',
                         '{stocking}after'
