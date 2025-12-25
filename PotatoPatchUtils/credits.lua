@@ -40,7 +40,7 @@ function G.UIDEF.card_h_popup(card)
 end
 
 if TMJ then
-    TMJ.SEARCH_FIELD_FUNCS[#TMJ.SEARCH_FIELD_FUNCS] = function(center)
+    TMJ.SEARCH_FIELD_FUNCS[#TMJ.SEARCH_FIELD_FUNCS+1] = function(center)
         return {unpack(center.coder or {}), unpack(center.artist or {})}
     end
 end
