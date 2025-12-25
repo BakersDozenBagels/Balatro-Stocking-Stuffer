@@ -1410,6 +1410,12 @@ function Card:update_alert()
     end
 end
 
+local ea = ease_ante
+function ease_ante(mod)
+    ea(mod)
+    G.GAME.stocking_last_pack = G.GAME.stocking_last_pack + mod
+end
+
 --#endregion
 
 --#region File Loading (Totally stolen from Hot Potato)
