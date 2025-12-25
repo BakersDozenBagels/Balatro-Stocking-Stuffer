@@ -41,7 +41,9 @@ StockingStuffer.Present({ --cute little jingle ball
 
     config = {
         extra = {
-            odds = 3
+            odds = 3,
+            hands = 1,
+            triggered = false,
         }
     },
 
@@ -67,8 +69,9 @@ StockingStuffer.Present({ --cute little jingle ball
     end,
 
     calculate = function(self, card, context)
-        if context.setting_blind then
+        if context.setting_blind and StockingStuffer.first_calculation and not card.ability.extra.triggered then
             if SMODS.pseudorandom_probability(card, "mintymas_yarn_chase!!!!", 1, card.ability.extra.odds) then
+                card.ability.extra.triggered = true
                 if #card.area.cards > 2 then
                     local mypos
                     for i=1,#card.area.cards do
@@ -91,10 +94,14 @@ StockingStuffer.Present({ --cute little jingle ball
                 return {
                     message = localize("mintymas_whee"),
                     func = function ()
-                        ease_hands_played(1)
+                        ease_hands_played(card.ability.extra.hands)
                     end
                 }
             end
+        end
+
+        if context.end_of_round and card.ability.extra.triggered then
+            card.ability.extra.triggered = false
         end
     end
 })
