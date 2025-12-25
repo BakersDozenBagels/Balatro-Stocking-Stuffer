@@ -25,40 +25,31 @@ return {
             ProdByProto_stocking_grinch_socks = {
                 name = "McJimbos Grinch Socks",
                 text = {
-                    {
-                        "When active:",
-                        "Plays Balatro Christmas Drip Music",
-                        "Also... ummm.. {X:red,C:white}X#1#{} Mult {stocking}after{} scoring ig"
-                    },
-                    {
-                        "{C:inactive}You may use this present to{}",
-                        "{C:inactive}toggle its effect#2#{}",
-                        "{stocking}usable{}, {stocking}#3#{}"
-                    }
+                    "Plays {C:attention,E:1}Balatro Christmas Drip Music{}",
+                    "{s:0.8}Also... ummm.. {X:red,C:white,s:0.8}X#1#{s:0.8} Mult ig",
+                    "{C:inactive}(use to toggle, {stocking}#3#{}{C:inactive}){}",
+                    "{stocking}after{s:0.8} {stocking}usable{}",
                 }
             },
             ProdByProto_stocking_wyr = {
                 name = 'Would You Rather?: The Card Game',
                 text = {
                     {
-                        "If this effect is active,",
-                        "{C:mult}+#1#{} Mult",
-                        "{C:inactive}Increases by 1 per present{}",
-                        "{C:inactive}owned at end of round{}",
-                        "{stocking}before{}, {stocking}#4#{}"
+                        "{C:mult}+#1#{} Mult,",
+                        "Increases by 1 per {C:stocking_present}Present",
+                        "owned at end of round",
+                        "{stocking}before{} {stocking}#4#{}",
                     },
                     {
-                        "If this effect is active,",
-                        "{C:chips}+#2#{} Chips",
-                        "{C:inactive}Increases by 5 per present{}",
-                        "{C:inactive}owned at end of round{}",
-                        "{stocking}after{}, {stocking}#3#{}"
+                        "{C:chips}+#2#{} Chips,",
+                        "Increases by 5 per {C:stocking_present}Present",
+                        "owned at end of round",
+                        "{stocking}after{} {stocking}#3#{}",
                     },
                     {
-                        "{C:inactive}You may use this present to{}",
-                        "{C:inactive}toggle its active effect{}",
-                        "{C:inactive}Values reset when used{}",
-                        "{stocking}usable{}"
+                        "Use to toggle active effect,",
+                        "values {C:red}reset{} when used",
+                        "{stocking}usable{}",
                     }
                 }
             },
@@ -68,8 +59,8 @@ return {
                     {
                         "When a {C:planet}Planet{} card is sold,",
                         "{C:green}#1# in #2#{} chance to gain {C:blue}+1{} hand",
-                        "{C:inactive}If not in a blind, hands will{}",
-                        "{C:inactive}increase when Blind is selected{}"
+                        "{C:inactive,s:0.8}If not in a blind, gives hands{}",
+                        "{C:inactive,s:0.8}when Blind is selected{}"
                     },
                     {
                         "If a {C:planet}Planet{} card was",
@@ -83,9 +74,10 @@ return {
                 name = "Mince Pies",
                 text = {
                     {
-                        "{C:green}#1# in #2#{} chance of gaining",
-                        "{X:stocking_xcheerback,C:stocking_xcheerfront}X#3#{} {X:stocking_xcheerback,C:stocking_xcheerfront}Festive Cheer{} when hand is played",
-                        "{stocking}before{}"
+                        "{C:green}#1# in #2#{} for",
+                        "{X:stocking_xcheerback,C:stocking_xcheerfront}X#3#{} {X:stocking_xcheerback,C:stocking_xcheerfront}Festive Cheer{}",
+                        "when hand is played",
+                        "{stocking}before{}",
                     },
                     {
                         "{C:inactive}What does that mean???{}"
@@ -96,14 +88,13 @@ return {
                 name = "Spa Themed Bath Set",
                 text = {
                     {
-                        "Relaxing bathtime paraphernalia,",
-                        "for your tranquil enjoyment",
-                        "{C:inactive}Gets replaced with the{}",
-                        "{C:inactive}first item in the set{}",
-                        "{C:inactive}at the end of the shop{}"
+                        "{C:inactive}Relaxing bathtime paraphernalia,",
+                        "{C:inactive}for your tranquil enjoyment.",
                     },
                     {
-                        "{stocking}next{} #1#"
+                        "Gets replaced with",
+                        "{C:attention}#1#{} at the",
+                        "end of the {C:attention}shop{}",
                     }
                 }
             },
@@ -111,22 +102,22 @@ return {
                 name = "Bath Bomb",
                 text = {
                     {
-                        "{C:chips}+#1# chips{},",
-                        "cards held in hand gain",
-                        "{C:chips}+#2# chips",
+                        "Cards held in hand",
+                        "gain {C:chips}+#2# Chips",
                         "{stocking}before{}"
                     },
                     {
-                        "Bath Bomb {C:red}loses{} {C:chips}#3# chips{}",
-                        "for each card upgraded",
+                        "{C:chips}+#1#{} Chips",
+                        "{C:chips}-#3#{} Chips for every",
+                        "previously upgraded card",
                         "{stocking}after{}"
                     },
                     {
                         "{C:inactive}Spa Set instruction manual:{}",
                         "{C:inactive}We here at Jimbo Fast Food hope{}",
-                        "{C:inactive}you enjoy the rest of the set, ideally after{}",
-                        "{C:inactive}the{} {C:attention}Bath Bomb{} {C:inactive}has {}{C:attention}fizzled out{}{C:inactive}!{}",
-                        "{stocking}next{} #4#"
+                        "{C:inactive}you enjoy the rest of the set, ideally{}",
+                        "{C:inactive}after the{} {C:attention}Bath Bomb{} {C:inactive}has {}{C:attention}fizzled out{}{C:inactive}!{}",
+                        "{stocking}next{} {C:attention}#4#{}",
                     }
                 }
             },
@@ -134,16 +125,15 @@ return {
                 name = "Shower Gel",
                 text = {
                     {
-                    "{C:blue}Cleanses{} the {C:attention}current blind{} when used.",
-                    "{C:inactive}-It reduces the score requirement by half,{}",
-                    "{C:inactive}or disables the boss blind.{}",
-                    "{C:inactive}- Effect picked at random where applicable.{}",
-                    "{stocking}usable{}"
+                    "{C:blue}Cleanses{} the {C:attention}current Blind{} when used:",
+                    "either {C:attention}disables{} the Boss Blind (if applicable)", 
+                    "or reduces the score requirement by {C:attention}half{}",
+                    "{stocking}usable{}",
                     },
                     {
                     "{C:inactive}I'm kinda getting mixed{}",
                     "{C:inactive}signals from the warning label...{}",
-                    "{stocking}next{} #1#"
+                    "{stocking}next{} {C:attention}#1#"
                     }
                 }
             },
@@ -151,22 +141,21 @@ return {
                 name = "Moisturiser",
                 text = {
                     {
-                        "- Removes {C:attention}perishable{} and/or {C:attention}debuff{}",
-                        "from a random applicable joker",
-                        "- If there are none, a random joker",
-                        "will instead become {C:edition}Foil, Polychrome,{}",
+                        "Removes {C:attention}Perishable{} sticker or {C:attention}debuff{}",
+                        "from a random applicable Joker",
+                        "If there are none, a random Joker",
+                        "instead becomes {C:dark_edition}Foil{}, {C:dark_edition}Polychrome{},",
                         "or {C:dark_edition}Negative{} scented",
-                        "{C:inactive}- Effect can apply to{} {C:dark_edtion)editioned{}{C:inactive} jokers{}",
+                        "{C:inactive,s:0.8}(Can override existing editions)",
                         "{stocking}usable{}"
                     },
                     {
-                        "{C:inactive}We at Jimbo Fast Food{}",
-                        "{C:inactive}sincerely hope you enjoyed{}",
-                        "{C:inactive}your fleeting moments of{}",
-                        "{C:inactive}consumerism with us.{}",
-                        "{C:inactive}As a token of appreciation,{}",
-                        "{C:inactive}we hope you enjoy this relaxation playlist.{}",
-                        "{stocking}next{} #1#"
+                        "{C:inactive}We at Jimbo Fast Food sincerely{}",
+                        "{C:inactive}hope you enjoyed your fleeting{}",
+                        "{C:inactive}moments of consumerism with us.{}",
+                        "{C:inactive}As a token of appreciation, we{}",
+                        "{C:inactive}hope you enjoy this relaxation playlist.{}",
+                        "{stocking}next{} {C:attention}#1#"
                     }
                 }
             },
@@ -174,14 +163,13 @@ return {
                 name = "Relaxing Playlist",
                 text = {
                     {
-                        "Relaxing ambient synth drones",
-                        "with meandering musical ideas.",
-                        "Enjoy :3"
+                        "{C:inactive}Relaxing ambient synth drones",
+                        "{C:inactive}with meandering musical ideas.",
+                        "{C:inactive}Enjoy :3",
                     },
                     {
-                        "Use this present to",
-                        "toggle the custom music",
-                        "{stocking}usable{}, {stocking}#1#{}"
+                        "{C:inactive}(use to toggle music, {stocking}#1#{}{C:inactive}){}",
+                        "{stocking}usable{}",
                     }
                 }
             }

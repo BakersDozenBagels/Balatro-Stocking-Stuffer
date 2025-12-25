@@ -518,7 +518,7 @@ StockingStuffer.Present({
             set = card.ability.extra.next.set,
             key = card.ability.extra.next.key
         }
-        return { vars = { card.ability.extra.chips, card.ability.extra.card_mod, card.ability.extra.chips_mod, thing } }
+        return { vars = { card.ability.extra.chips >= 0 and card.ability.extra.chips or 0, card.ability.extra.card_mod, card.ability.extra.chips_mod, thing } }
     end,
 
     in_pool = function(self,args)
@@ -546,13 +546,13 @@ StockingStuffer.Present({
             end
         end
 
-        if context.joker_main and StockingStuffer.first_calculation then
+        if context.joker_main and StockingStuffer.second_calculation then
             return {
-                chips = card.ability.chips
+                chips = card.ability.extra.chips
             }
         end
 
-        if context.joker_main and StockingStuffer.second_calculation then
+        if context.after and StockingStuffer.second_calculation then
             card.ability.extra.chips = card.ability.extra.chips - (card.ability.extra.cardQ * card.ability.extra.chips_mod)
             if card.ability.extra.chips <= 0 then
                 card:juice_up()
@@ -613,7 +613,7 @@ StockingStuffer.Present({
     -- use and can_use are completely optional, delete if you do not need your present to be usable
     can_use = function(self, card)
         -- check for use condition here
-        return true
+        return G.GAME.blind.in_blind
     end,
     use = function(self, card, area, copier) 
         -- do stuff here

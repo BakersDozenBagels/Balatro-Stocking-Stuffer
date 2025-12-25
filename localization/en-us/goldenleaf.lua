@@ -52,9 +52,9 @@ return {
             ["[REDACTED]Autumn_stocking_gic"] = {
                 name = {'Generic Isometric', 'Present-shaped Cube'},
                 text = {
-                    "{C:attention}+1 Selection limit{}",
-                    "for selecting",
-                    "{C:attention}wrapped{} presents"
+                    "You can open {C:attention}1{} additional",
+                    "{C:stocking_present}Wrapped Present{} when you",
+                    "visit the {C:attention}Christmas Tree{}",
                 }
             },
             ["[REDACTED]Autumn_stocking_ditto"] = {

@@ -66,8 +66,10 @@ return {
                 name = 'Tungsten Rhombicosidodecahedron',
                 text = {
                     {
-                        "{C:red}-#1#{} choice in {C:attention}Booster Packs",
-                        "{C:attention}+#2#{} {V:1}Wrapped Present{} choices",
+                        "{C:red}-#1#{} card to choose from",
+                        "in {C:attention}Booster Packs{},",
+                        "{C:attention}+#2#{} {V:1}Wrapped Presents{} to choose from",
+                        "when you visit the {C:attention}Christmas Tree{}"
                     },
                 }
             },

@@ -58,7 +58,7 @@ StockingStuffer.Present({
     --         'Does nothing'
     --     }
     -- },
-    pos = { x = 1, y = 0 },
+    pos = { x = 13, y = 0 },
     config = {
         days = 0,
         trig = false,
@@ -66,7 +66,18 @@ StockingStuffer.Present({
     },
     -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
     display_size = { w = 67 * 1.2, h = 71 * 1.2 },
-
+    loc_vars = function(self, info_queue, card)
+        if card.area == G.stocking_present and card.ability and card.ability.days then
+            local old_key = "GlobalPunk LLC_stocking_jimbmas_cartridge"
+            if card.ability.days >= 0 and card.ability.days < 12 then
+                return {key = old_key..tostring(card.ability.days) or old_key}
+            elseif card.ability.days >= 12 then
+                return {key = old_key..'11'}
+            end
+        else
+            return
+        end
+    end,
     -- use and can_use are completely optional, delete if you do not need your present to be usable
     -- calculate is completely optional, delete if your present does not need it
     calculate = function(self, card, context)
@@ -78,17 +89,17 @@ StockingStuffer.Present({
         end
         if context.joker_main then
             --10 Scores A'leaping
-            if card.ability.days == 2 and card.ability.trig == false then
+            if card.ability.days == 2 and StockingStuffer.second_calculation then
                 card.ability.trig = true
                 G.GAME.blind.chips = math.floor(G.GAME.blind.chips - G.GAME.blind.chips * 0.1)
                 G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
                 card:juice_up(0.3, 0.5)
-                card.children.center:set_sprite_pos({ x = 13, y = 0 })
+                card.children.center:set_sprite_pos({ x = 12, y = 0 })
                 card.ability.days = card.ability.days + 1
             end
         end
-        if card.ability.rebate then
-            if context.discard and not context.other_card.debuff and context.other_card:get_id() == 8 then
+        if context.discard and StockingStuffer.first_calculation and card.ability.days == 4 then
+            if not context.other_card.debuff and context.other_card:get_id() == 8 then
                 G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + 8
                 return {
                     dollars = 8,
@@ -96,7 +107,9 @@ StockingStuffer.Present({
                         G.E_MANAGER:add_event(Event({
                             func = function()
                                 G.GAME.dollar_buffer = 0
-                                card.ability.days = card.ability.days + 1
+                                if card.ability.days == 4 then 
+                                    card.ability.days = 5
+                                end
                                 return true
                             end
                         }))
@@ -109,11 +122,9 @@ StockingStuffer.Present({
                 G.E_MANAGER:add_event(Event({
                     func = function()
                         if card.ability.days >= 0 and card.ability.trig == false then
-                            if card.ability.days >= 12 then
-                                card:start_dissolve({ G.C.RED }, nil, 1.6)
-                            end
                             --AND A JOKER THAT RETRIGGEREDDDDD
                             if card.ability.days == 11 then
+                                card.children.center:set_sprite_pos({ x = 1, y = 0 })
                                 card.ability.trig = true
                                 local rejoke = {
                                     'j_hanging_chad',
@@ -237,7 +248,7 @@ StockingStuffer.Present({
                             --8 Rebates Mailing
                             if card.ability.days == 4 then
                                 card.ability.trig = true
-                                card.ability.rebate = true
+                                --card.ability.rebate = true
                                 card:juice_up(0.3, 0.5)
                                 card.children.center:set_sprite_pos({ x = 10, y = 0 })
                             end
@@ -305,7 +316,7 @@ StockingStuffer.Present({
                             if card.ability.days == 1 then
                                 card.ability.trig = true
                                 card:juice_up(0.3, 0.5)
-                                card.children.center:set_sprite_pos({ x = 14, y = 0 })
+                                card.children.center:set_sprite_pos({ x = 13, y = 0 })
                                 for i = 1, 11 do
                                     SMODS.add_card {
                                         set = 'Joker',
@@ -357,6 +368,9 @@ StockingStuffer.Present({
                                 end
                             end
                             card.ability.days = card.ability.days + 1
+                            if card.ability.days >= 12 then
+                                card:start_dissolve({ G.C.RED }, nil, 1.6)
+                            end
                         end
                         return true
                     end,

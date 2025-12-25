@@ -44,17 +44,21 @@ StockingStuffer.Present({ --cute little jingle ball
             odds = 3,
             hands = 1,
             triggered = false,
+            antes_held = 0,
         }
     },
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
+        end]]
+        if card.ability.extra.antes_held >= 2 then
+            key = key.."_clearer"
         end
-
+        local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'mintymas_yarn_chase_target')
         return {
-            key = key
+            key = key, vars = { numerator, denominator }
         }
     end,
 
@@ -62,6 +66,24 @@ StockingStuffer.Present({ --cute little jingle ball
         return true
     end,
     use = function(self, card, area, copier)
+        if #card.area.cards > 2 then
+            local mypos
+            for i=1,#card.area.cards do
+                if card.area.cards[i] == card then
+                    mypos = i
+                    break
+                end
+            end
+            local otherpos = pseudorandom("mintymas_yarn_chase_target", 1, #card.area.cards-1)
+            local dir = -1
+            if otherpos >= mypos then otherpos = otherpos + 1; dir = 1 end
+            local dist = math.abs(mypos - otherpos)
+
+            for i=1,dist do
+                card.area.cards[mypos], card.area.cards[mypos+dir] = card.area.cards[mypos+dir], card.area.cards[mypos]
+                mypos = mypos+dir
+            end
+        end
         SMODS.calculate_effect({ message = localize("mintymas_whee")},card)
     end,
     keep_on_use = function(self, card)
@@ -103,6 +125,9 @@ StockingStuffer.Present({ --cute little jingle ball
         if context.end_of_round and card.ability.extra.triggered then
             card.ability.extra.triggered = false
         end
+        if context.end_of_round and context.game_over == false and context.main_eval and StockingStuffer.first_calculation and context.beat_boss then
+            card.ability.extra.antes_held = card.ability.extra.antes_held + 1
+        end
     end
 })
 
@@ -115,14 +140,16 @@ StockingStuffer.Present({ --nip toy
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
-        end
-
+        end]]
         if not card.ability.extra.active then
             key = key.."_inactive"
         end
-
+        if card.ability.extra.antes_held >= 2 then
+            key = key.."_clearer"
+        end
+        
         return {
             key = key
         }
@@ -130,7 +157,8 @@ StockingStuffer.Present({ --nip toy
 
     config = {
         extra = {
-            active = true
+            active = true,
+            antes_held = 0,
         }
     },
 
@@ -158,6 +186,9 @@ StockingStuffer.Present({ --nip toy
                 message = localize("k_active_ex")
             }
         end
+        if context.end_of_round and context.game_over == false and context.main_eval and StockingStuffer.first_calculation and context.beat_boss then
+            card.ability.extra.antes_held = card.ability.extra.antes_held + 1
+        end
     end
 })
 
@@ -183,13 +214,20 @@ StockingStuffer.Present({ --fishy treat :9
     key = 'treat',
     pos = { x = 3, y = 0 },
     -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
+    config = {
+        extra = {
+            antes_held = 0,
+        }
+    },
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
+        end]]
+        if card.ability.extra.antes_held >= 1 then
+            key = key.."_clearer"
         end
-        
         return {
             key = key
         }
@@ -202,6 +240,11 @@ StockingStuffer.Present({ --fishy treat :9
         --Play a cute nomnomnomming sound?
         ease_hands_played(1)
     end,
+    calculate = function (self, card, context)
+        if context.end_of_round and context.game_over == false and context.main_eval and StockingStuffer.first_calculation and context.beat_boss then
+            card.ability.extra.antes_held = card.ability.extra.antes_held + 1
+        end
+    end
 })
 
 local wandfuncs = { --kinda useful? or needlessly overcomplicated? you deiside!
@@ -279,9 +322,9 @@ StockingStuffer.Present({ --mysterious object (the wand, upside down)
             key = key.."_"..card.ability.extra.type
         end
 
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
-        end
+        end]]
         
         return {
             key = key,
@@ -348,9 +391,9 @@ StockingStuffer.Present({ --string from the wand
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
-        end
+        end]]
         
         return {
             key = key,
@@ -391,9 +434,9 @@ StockingStuffer.Present({ --feather from the wand
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
-        end
+        end]]
         
         return {
             key = key,
@@ -424,23 +467,27 @@ StockingStuffer.Present({ --pitfall seed (joke on my choice of placeholder sprit
 
     loc_vars = function (self, info_queue, card)
         local key = self.key
-        if (SMODS.Mods.SlayTheJokers or {}).can_load then
+        --[[if (SMODS.Mods.SlayTheJokers or {}).can_load then
             key = key.."_nomultibox"
+        end]]
+        if card.ability.extra.antes_held >= 2 then
+            key = key.."_clearer"
         end
-
+        local numerator, denominator = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, 'mintymas_yarn_chase_target')
         return {
-            key = key
+            key = key, vars = { numerator, denominator }
         }
     end,
     config = {
         extra = {
             odds = 5,
             mindmg = 2,
-            maxdmg = 13
+            maxdmg = 13,
+            antes_held = 0,
         }
     },
     calculate = function(self, card, context)
-        if context.before then
+        if context.before and StockingStuffer.first_calculation then
             if SMODS.pseudorandom_probability(card, "mintymas_pitfall_trap", 1, card.ability.extra.odds) then
                 if G.GAME.blind and ((not G.GAME.blind.disabled) and (G.GAME.blind:get_type() == 'Boss')) then 
                     G.GAME.blind:disable()
@@ -460,6 +507,9 @@ StockingStuffer.Present({ --pitfall seed (joke on my choice of placeholder sprit
                     end
                 }
             end
+        end
+        if context.end_of_round and context.game_over == false and context.main_eval and StockingStuffer.first_calculation and context.beat_boss then
+            card.ability.extra.antes_held = card.ability.extra.antes_held + 1
         end
     end
 })

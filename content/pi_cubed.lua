@@ -59,7 +59,7 @@ StockingStuffer.WrappedPresent({
                         local pool = get_current_pool('stocking_present')
                         local key = pseudorandom_element(pool, 'stocking_present_open', {in_pool = function(v, args) return G.P_CENTERS[v] and G.P_CENTERS[v].developer == self.developer end})
                         discover_card(G.P_CENTERS[key])
-                        gift = SMODS.add_card({ area = G.gift, set = 'stocking_present', key = key })
+                        gift = SMODS.add_card({ area = G.gift, set = 'stocking_present', key = key, bypass_discovery_center = true, bypass_discovery_ui = true })
                         return true
                     end
                 }))
@@ -72,7 +72,7 @@ StockingStuffer.WrappedPresent({
                     end)
                 }))
                 G.E_MANAGER:add_event(Event({
-                    trigger = 'ease', delay = 1 * G.SETTINGS.GAMESPEED,
+                    trigger = 'ease', delay = 1,
                     ref_table = G.gift.T, ref_value = 'y',
                     ease_to = G.play.T.y,
                     func = (function(t) return t end)
@@ -80,9 +80,18 @@ StockingStuffer.WrappedPresent({
                 G.E_MANAGER:add_event(Event({
                     trigger = 'after', delay = 0.4,
                     func = function()
+                        local key = gift.config.center_key
+                        local vars = gift.config.center:loc_vars({}, gift)
+                        key = vars and vars.key or key
                         attention_text({
-                            scale = 0.8, rotate = true, text = localize({type = 'name_text', key = gift.config.center_key, set = 'stocking_present'}).." received!", hold = 3, align = 'cm', offset = {x = 0,y = -1.7},major = G.play
+                            scale = 0.8, rotate = true, text = localize({type = 'name_text', key = key, set = 'stocking_present'})..localize('stocking_stuffer_received'), hold = 3, align = 'cm', offset = {x = 0,y = -1.7},major = G.play
                         })               
+                        return true
+                    end
+                }))
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after', delay = 0.5 * G.SETTINGS.GAMESPEED,
+                    func = function()
                         return true
                     end
                 }))
