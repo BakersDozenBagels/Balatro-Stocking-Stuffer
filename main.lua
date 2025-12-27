@@ -904,6 +904,7 @@ end
         key = 'stocking_present_select',
         group_key = 'stocking_stuffer_under_the_tree',
         atlas = 'sack',
+        discovered = true,
         config = { choose = 1, extra = 3 },
         display_size = {w = 71 *  2.5, h = 95 * 2.5},
         ease_background_colour = function(self)
