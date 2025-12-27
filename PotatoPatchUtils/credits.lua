@@ -1,6 +1,8 @@
 PotatoPatchUtils.CREDITS = {}
 
 PotatoPatchUtils.CREDITS.generate_string = function(developers, prefix)
+    if type(developers) ~= 'table' then return end
+
     local amount = #developers
     local credit_string = {n=G.UIT.R, config={align = 'tm'}, nodes={
                 {n=G.UIT.R, config={align='cm'}, nodes={{n=G.UIT.T, config={text = localize(prefix), shadow = true, colour = G.C.UI.BACKGROUND_WHITE, scale = 0.27}}}}
@@ -31,10 +33,16 @@ function G.UIDEF.card_h_popup(card)
     local obj = card.config.center
     local target = ret_val.nodes[1].nodes[1].nodes[1].nodes
     if obj and obj.artist then
-        table.insert(target, PotatoPatchUtils.CREDITS.generate_string(obj.artist, 'stocking_stuffer_art_credit')) 
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.artist, 'stocking_stuffer_art_credit')
+        if str then
+            table.insert(target, str)
+        end
     end
     if obj and obj.coder then
-        table.insert(target, PotatoPatchUtils.CREDITS.generate_string(obj.coder, 'stocking_stuffer_code_credit')) 
+        local str = PotatoPatchUtils.CREDITS.generate_string(obj.coder, 'stocking_stuffer_code_credit')
+        if str then
+            table.insert(target, str)
+        end
     end
     return ret_val
 end
