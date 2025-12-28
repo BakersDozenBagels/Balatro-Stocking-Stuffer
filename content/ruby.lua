@@ -293,6 +293,7 @@ local function get_random_joker(key_append)
         j_invisible = true, --requires more than 1 round
         j_todo_list = true, --more like togay list
         j_luchador = true, --needs to be sold,
+        j_loyalty_card = true, --round count is nil by default
     }
     while center == 'UNAVAILABLE' or blacklist[center] do --some cards just dont work
         it = it + 1
