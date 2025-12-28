@@ -478,3 +478,16 @@ payload = '''
 -- assert(o.mod == nil, "Created object should not have \"mod\" field defined.")
 o.mod = o.mod or SMODS.current_mod
 '''
+
+# Add ID to collection cycler node container
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/ui.lua"]'
+match_indent = true
+position = 'at'
+pattern = '''
+create_option_cycle({options = options, w = 4.5, cycle_shoulders = true, opt_callback = 'SMODS_card_collection_page', current_option = 1, colour = G.ACTIVE_MOD_UI and (G.ACTIVE_MOD_UI.ui_config or {}).collection_option_cycle_colour or G.C.RED, no_pips = true, focus_args = {snap_to = true, nav = 'wide'}})
+'''
+payload = '''
+create_option_cycle({options = options, w = 4.5, cycle_shoulders = true, opt_callback = 'SMODS_card_collection_page', current_option = 1, colour = G.ACTIVE_MOD_UI and (G.ACTIVE_MOD_UI.ui_config or {}).collection_option_cycle_colour or G.C.RED, no_pips = true, focus_args = {snap_to = true, nav = 'wide'}, id = args.stocking_id})
+'''
