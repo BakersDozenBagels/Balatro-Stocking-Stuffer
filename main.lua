@@ -761,7 +761,9 @@ end
                         trigger = 'after', delay = 0.4,
                         func = function()
                             local key = gift.config.center_key
+                            gift.spawning = true
                             local vars = gift.config.center:loc_vars({}, gift)
+                            gift.spawning = false
                             key = vars and vars.key or key
                             attention_text({
                                 scale = 0.8, rotate = true, text = localize({type = 'name_text', key = key, set = 'stocking_present'})..localize('stocking_stuffer_received'), hold = 3, align = 'cm', offset = {x = 0,y = -1.7},major = G.play

@@ -198,24 +198,26 @@ StockingStuffer.Present({
 
         local cardareas = {}
 
-        for i=1, math.ceil(#card.ability.extra.cards/5) do
-            table.insert(cardareas,CardArea(0,G.ROOM.T.h,G.CARD_W*3,1, {card_limit = 5, type = 'title', highlight_limit = 0}))
+        if card and not card.spawning then
+            for i=1, math.ceil(#card.ability.extra.cards/5) do
+                table.insert(cardareas,CardArea(0,0,G.CARD_W*3,1, {card_limit = 5, type = 'title', highlight_limit = 0}))
+            end
+            for i,v in ipairs(card.ability.extra.cards) do
+                local c = SMODS.create_card{
+                    set = 'Base',
+                    area = cardareas[math.ceil(i/5)],
+                    rank = v.value,
+                    suit = v.suit,
+                    enhancement = v.extra.enhancement or 'c_base',
+                }
+                c:set_edition(v.extra.edition, true, true)
+                c:set_seal(v.extra.seal,true,true)
+                c.T.w = c.T.w * 0.5
+                c.T.h = c.T.h * 0.5
+                cardareas[math.ceil(i/5)]:emplace(c)
+            end
         end
 
-        for i,v in ipairs(card.ability.extra.cards) do
-            local c = SMODS.create_card{
-                set = 'Base',
-                area = cardareas[math.ceil(i/5)],
-                rank = v.value,
-                suit = v.suit,
-                enhancement = v.extra.enhancement or 'c_base',
-            }
-            c:set_edition(v.extra.edition, true, true)
-            c:set_seal(v.extra.seal,true,true)
-            c.T.w = c.T.w * 0.5
-            c.T.h = c.T.h * 0.5
-            cardareas[math.ceil(i/5)]:emplace(c)
-        end
 
         local ui_areas = {}
 
