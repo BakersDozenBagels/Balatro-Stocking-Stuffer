@@ -142,14 +142,13 @@ StockingStuffer.Present({
         return true
     end,
     use = function(self, card, area, copier)
-        card.ability.extra.mode = card.ability.extra.mode + 1
-        card.ability.extra.mode = card.ability.extra.mode % 2
+        card.ability.extra.mode = (card.ability.extra.mode + 1) % 2
         card:juice_up()
     end,
     keep_on_use = function(self, card) return true end,
     calculate = function(self, card, context)
-        local function swap()
-            card.ability.extra.triggered = true
+        local function swap(reset)
+            card.ability.extra.triggered = not reset
             local text = G.FUNCS.get_poker_hand_info(G.play.cards)
             local t_chips = G.GAME.hands[text].chips
             local t_mult = G.GAME.hands[text].mult
@@ -158,20 +157,23 @@ StockingStuffer.Present({
             G.E_MANAGER:add_event(Event{func = function () 
                 level_up_hand(card,text,true,0)
             return true end})
-            return {
-                chips = mult - hand_chips,
-                mult = hand_chips - mult,
-                remove_default_message = true,
-                message = localize('k_swapped_ex'),
-            }
+            if not reset then
+                return {
+                    chips = mult - hand_chips,
+                    mult = hand_chips - mult,
+                    remove_default_message = true,
+                    message = localize('k_swapped_ex'),
+                }
+            end
         end
         if not card.ability.extra.triggered then
-            if card.ability.extra.mode == 0 and context.before then return swap()
+            if card.ability.extra.mode == 0 and context.before and StockingStuffer.first_calculation then return swap()
             elseif card.ability.extra.mode == 1 and context.joker_main and StockingStuffer.first_calculation then return swap()
             end
         end
-        if context.after then
+        if context.after and StockingStuffer.first_calculation then
             card.ability.extra.triggered = false
+            swap(true)
         end
     end
 })
