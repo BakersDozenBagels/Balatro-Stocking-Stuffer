@@ -81,7 +81,9 @@ StockingStuffer.Present({
         if StockingStuffer.first_calculation and card.ability.extra.active then
             if context.before then
                 local target = pseudorandom_element(G.hand.cards, 'peashooter_destroy')
-                SMODS.destroy_cards(target)
+                if target then
+                    SMODS.destroy_cards(target)
+                end
                 return {
                     message = 'Shoot'
                 }
