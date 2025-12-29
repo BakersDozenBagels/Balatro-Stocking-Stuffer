@@ -41,8 +41,6 @@ SMODS.Atlas({
     py = 95
 })
 
-local to_big = to_big or function(x) return x end
-
 SMODS.Shader({ key = 'clay', path = 'soulware-clay.fs' })
 
 -- Developer Template
